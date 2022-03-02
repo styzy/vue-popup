@@ -1,0 +1,49 @@
+{
+	"name": "@styzy/vue-popup",
+	"version": "0.1.0",
+	"description": "A Popup Plugins For Vue.js",
+	"keywords": [
+		"vue",
+		"popup",
+		"plugin"
+	],
+	"author": {
+		"name": "STYZY",
+		"email": "styzyreal@126.com",
+		"url": "https://our.styzy.cn"
+	},
+	"bugs": {
+		"url": "https://github.com/styzy/vue-popup/issues",
+		"email": "styzyreal@126.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:styzy/vue-popup.git"
+	},
+	"main": "src/index.js",
+	"private": false,
+	"license": "MIT",
+	"scripts": {
+		"lib": "vue-cli-service build --target lib --name vue-popup --dest lib src/index.js"
+	},
+	"dependencies": {
+		"core-js": "^3.6.5",
+		"vue": "^2.6.11"
+	},
+	"devDependencies": {
+		"@prettier/plugin-pug": "^1.19.2",
+		"@vue/cli-plugin-babel": "~4.5.0",
+		"@vue/cli-plugin-eslint": "~4.5.0",
+		"@vue/cli-service": "~4.5.0",
+		"@vue/eslint-config-prettier": "^6.0.0",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^6.8.0",
+		"eslint-plugin-prettier": "^3.3.1",
+		"eslint-plugin-vue": "^6.2.2",
+		"prettier": "^2.2.1",
+		"stylus": "^0.54.7",
+		"stylus-loader": "^3.0.2",
+		"vue-cli-plugin-pug": "~2.0.0",
+		"vue-template-compiler": "^2.6.14"
+	}
+}

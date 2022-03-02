@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "CommonJS",
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["/examples/*"],
+			"~/*": ["/src/*"],
+			"#/*": ["/src/utils/*"]
+		}
+	},
+	"exclude": ["node_modules", "dist", "lib"]
+}
