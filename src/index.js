@@ -58,6 +58,6 @@ Popup.install = function (Vue) {
 	Popup.Vue = Vue
 }
 
-Popup.version = '0.1.0'
+Popup.version = '0.1.1'
 
 export default Popup
