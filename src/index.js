@@ -1,5 +1,6 @@
 import _Popup from '../packages/Popup.vue'
 
+const version = '0.1.2'
 class Popup {
 	constructor({ zIndex } = { zIndex: 1000 }) {
 		this._seed = 0
@@ -58,6 +59,6 @@ Popup.install = function (Vue) {
 	Popup.Vue = Vue
 }
 
-Popup.version = '0.1.1'
+Popup.version = version
 
 export default Popup

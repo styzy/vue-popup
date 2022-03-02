@@ -9,11 +9,14 @@
 	)
 </template>
 <script>
+import PopupMask from './PopupMask.vue'
+import PopupView from './PopupView.vue'
+
 export default {
 	name: 'Popup',
 	components: {
-		PopupMask: () => import('./PopupMask.vue'),
-		PopupView: () => import('./PopupView.vue')
+		PopupMask: PopupMask,
+		PopupView: PopupView
 	},
 	props: {
 		Vue: {},
