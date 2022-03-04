@@ -99,7 +99,7 @@ export default {
 				this.leave = true
 				window.setTimeout(() => {
 					this.$emit('close', ...args)
-				}, this.animateDuration)
+				}, this.animationDuration)
 			})
 
 			this.instance.$on('resize', () => {
