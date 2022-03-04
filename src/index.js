@@ -1,6 +1,6 @@
 import _Popup from '../packages/Popup.vue'
 
-const version = '0.1.3'
+const version = '0.1.5'
 class Popup {
 	constructor({ zIndex } = { zIndex: 1000 }) {
 		this._seed = 0
@@ -25,7 +25,32 @@ class Popup {
 		this._popups[id] = popup
 		return popup
 	}
-	render(options = {}) {
+	render({
+		mask,
+		maskClickClose,
+		component,
+		componentProps,
+		animationDuration,
+		width,
+		maxWidth,
+		minWidth,
+		height,
+		maxHeight,
+		minHeight
+	} = {}) {
+		const options = {
+			mask,
+			maskClickClose,
+			component,
+			componentProps,
+			animationDuration,
+			width,
+			maxWidth,
+			minWidth,
+			height,
+			maxHeight,
+			minHeight
+		}
 		return new Promise(resolve => {
 			const popup = this._create(),
 				instance = new this._PopupConstructor({

@@ -12,7 +12,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .popup-mask
 	position fixed
 	top 0

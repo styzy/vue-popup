@@ -1,5 +1,5 @@
 <template lang="pug">
-.popup-view(:style="styleObject")
+.popup-view(:class="{ 'popup-view-leave': leave }" :style="styleObject")
 	div(ref="content")
 </template>
 <script>
@@ -15,30 +15,41 @@ export default {
 				return {}
 			}
 		},
+		animationDuration: {
+			type: Number,
+			default: 100
+		},
 		zIndex: {
 			type: Number
 		},
 		width: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		},
 		maxWidth: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		},
 		minWidth: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		},
 		height: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		},
 		maxHeight: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		},
 		minHeight: {
-			type: Number
+			type: [Number, String],
+			default: 'auto'
 		}
 	},
 	data() {
 		return {
+			leave: false,
 			contentWidth: 0,
 			contentHeight: 0,
 			instance: null
@@ -48,16 +59,14 @@ export default {
 		styleObject() {
 			return {
 				zIndex: this.zIndex + 1,
-				width: this.width
-					? `${this.width}px`
-					: `${this.contentWidth}px`,
-				maxWidth: this.maxWidth ? `${this.maxWidth}px` : 'auto',
-				minWidth: this.minWidth ? `${this.minWidth}px` : 'auto',
-				height: this.height
-					? `${this.height}px`
-					: `${this.contentHeight}px`,
-				maxHeight: this.maxHeight ? `${this.maxHeight}px` : 'auto',
-				minHeight: this.minHeight ? `${this.minHeight}px` : 'auto'
+				animationDuration: `${this.animationDuration / 1000}s`,
+				width: this.sizeFormat(this.width) || `${this.contentWidth}px`,
+				maxWidth: this.sizeFormat(this.maxWidth) || 'auto',
+				minWidth: this.sizeFormat(this.minWidth) || 'auto',
+				height:
+					this.sizeFormat(this.height) || `${this.contentHeight}px`,
+				maxHeight: this.sizeFormat(this.maxHeight) || 'auto',
+				minHeight: this.sizeFormat(this.minHeight) || 'auto'
 			}
 		}
 	},
@@ -71,6 +80,15 @@ export default {
 				config = (await config()).default
 			}
 
+			config.mixins = config.mixins || []
+
+			config.mixins.push({
+				async mounted() {
+					await this.$nextTick()
+					this.$emit('resize')
+				}
+			})
+
 			const Constructor = this.Vue.extend(config)
 
 			this.instance = new Constructor({
@@ -78,14 +96,17 @@ export default {
 			})
 
 			this.instance.$on('close', (...args) => {
-				this.$emit('close', ...args)
+				this.leave = true
+				window.setTimeout(() => {
+					this.$emit('close', ...args)
+				}, this.animateDuration)
+			})
+
+			this.instance.$on('resize', () => {
+				this.sizeFix()
 			})
 
 			this.instance.$mount(this.$refs.content)
-
-			await this.$nextTick()
-
-			this.sizeFix()
 		},
 		async sizeFix() {
 			await this.$nextTick()
@@ -100,18 +121,41 @@ export default {
 		},
 		getComponentSize() {
 			const el = this.instance.$el,
-				styles = window.getComputedStyle(el)
+				styles = window.getComputedStyle(el),
+				isBorderBox = styles['boxSizing'] === 'border-box'
+
+			let width = parseFloat(styles['width']),
+				height = parseFloat(styles['height'])
+
+			if (!isBorderBox) {
+				width +=
+					parseFloat(styles['paddingLeft']) +
+					parseFloat(styles['paddingRight'])
+				height +=
+					parseFloat(styles['paddingTop']) +
+					parseFloat(styles['paddingBottom'])
+			}
 
 			return {
-				width: parseFloat(styles['width']),
-				height: parseFloat(styles['height'])
+				width,
+				height
 			}
+		},
+		sizeFormat(size) {
+			if (typeof size === 'string') {
+				if (size === 'auto') return false
+				return size
+			}
+
+			if (typeof size === 'number') return `${size}px`
+
+			return 'auto'
 		}
 	}
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .popup-view
 	position fixed
 	top 0
@@ -119,5 +163,25 @@ export default {
 	bottom 0
 	left 0
 	margin auto
-	box-shadow 1px 1px 50px rgba(0, 0, 0, 0.3)
+	animation-name enter
+	&.popup-view-leave
+		opacity 0
+		transform scale(0)
+		animation-name leave
+	&>*
+		display inline-block
+@keyframes enter
+	from
+		opacity 0
+		transform scale(0)
+	to
+		opacity 1
+		transform scale(1)
+@keyframes leave
+	from
+		opacity 1
+		transform scale(1)
+	to
+		opacity 0
+		transform scale(0)
 </style>

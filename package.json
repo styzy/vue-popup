@@ -1,6 +1,6 @@
 {
 	"name": "@styzy/vue-popup",
-	"version": "0.1.3",
+	"version": "0.1.5",
 	"description": "A Popup Plugins For Vue.js",
 	"keywords": [
 		"vue",
@@ -20,7 +20,8 @@
 		"type": "git",
 		"url": "git@github.com:styzy/vue-popup.git"
 	},
-	"main": "lib/vue-popup.common.js",
+	"main": "src/index.js",
+	"main1": "lib/vue-popup.common.js",
 	"private": false,
 	"license": "MIT",
 	"scripts": {

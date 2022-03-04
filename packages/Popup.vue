@@ -1,13 +1,12 @@
 <template lang="pug">
 .popup
 	PopupMask(:zIndex="zIndex" @click="maskClickHandler" v-if="mask")
-	Transition(name="popup-view")
-		PopupView(
-			:Vue="Vue"
-			:zIndex="zIndex"
-			@close="closeHandler"
-			v-bind="originConfig"
-		)
+	PopupView(
+		:Vue="Vue"
+		:zIndex="zIndex"
+		@close="closeHandler"
+		v-bind="originConfig"
+	)
 </template>
 <script>
 import PopupMask from './PopupMask.vue'
@@ -59,14 +58,3 @@ export default {
 	}
 }
 </script>
-
-<style lang="stylus" scoped>
-.popup-view-enter
-	transform translate(0%, 0%)
-.popup-view-enter-to
-	transform translate(100%, 100%)
-.popup-view-leave
-	transform translate(100%, 100%)
-.popup-view-leave-to
-	transform translate(0%, 0%)
-</style>
