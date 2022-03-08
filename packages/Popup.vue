@@ -1,8 +1,14 @@
 <template lang="pug">
-.popup
-	PopupMask(:zIndex="zIndex" @click="maskClickHandler" v-if="mask")
+.popup(v-if="!destroyed")
+	PopupMask(
+		:leave="leave"
+		:zIndex="zIndex"
+		@close="closeHandler"
+		v-bind="originConfig"
+	)
 	PopupView(
 		:Vue="Vue"
+		:leave="leave"
 		:zIndex="zIndex"
 		@close="closeHandler"
 		v-bind="originConfig"
@@ -18,6 +24,7 @@ export default {
 		PopupMask: PopupMask,
 		PopupView: PopupView
 	},
+	inheritAttrs: false,
 	props: {
 		Vue: {},
 		id: {
@@ -25,32 +32,37 @@ export default {
 			default: ''
 		},
 		zIndex: {
-			type: Number,
-			default: 1000
+			type: Number
 		},
-		mask: {
-			type: Boolean,
-			default: true
-		},
-		maskClickClose: {
-			type: Boolean,
-			default: false
+		animationDuration: {
+			type: Number
 		},
 		originConfig: {}
 	},
 	data() {
 		return {
+			leave: false,
+			destroyed: false,
 			destroyPayload: undefined
 		}
 	},
 	methods: {
-		maskClickHandler() {
-			if (!this.maskClickClose) return
-			this.closeHandler()
-		},
-		closeHandler(payload) {
+		async closeHandler(payload) {
 			this.destroyPayload = payload
+			this.leave = true
+
+			await this.wait(this.animationDuration)
+
+			this.destroyed = true
+
+			await this.$nextTick()
+
 			this.$destroy()
+		},
+		wait(time) {
+			return new Promise(resolve => {
+				window.setTimeout(resolve, time)
+			})
 		}
 	},
 	destroyed() {

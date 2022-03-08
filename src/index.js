@@ -1,11 +1,13 @@
 import _Popup from '../packages/Popup.vue'
 
-const version = '0.2.2'
+const version = '0.2.3'
 class Popup {
-	constructor({ zIndex } = { zIndex: 1000 }) {
+	constructor({ zIndex = 1000 } = {}) {
+		console.log('zIndex: ', zIndex)
 		this._seed = 0
 		this._zIndex = zIndex || 1000
 		this._popups = {}
+		window.popups = this._popups
 		this._PopupConstructor = Popup.Vue.extend(_Popup)
 	}
 	_getZIndex() {
@@ -14,7 +16,7 @@ class Popup {
 		return zIndex
 	}
 	_createId() {
-		return `styzy-vue-popup-${this._seed}`
+		return `styzy-vue-popup-${this._seed++}`
 	}
 	_create() {
 		const id = this._createId(),
@@ -26,17 +28,17 @@ class Popup {
 		return popup
 	}
 	render({
-		mask,
-		maskClickClose,
+		mask = true,
+		maskClickClose = false,
 		component,
 		componentProps,
-		animationDuration,
-		width,
-		maxWidth,
-		minWidth,
-		height,
-		maxHeight,
-		minHeight
+		animationDuration = 100,
+		width = 'auto',
+		maxWidth = 'auto',
+		minWidth = 'auto',
+		height = 'auto',
+		maxHeight = 'auto',
+		minHeight = 'auto'
 	} = {}) {
 		const options = {
 			mask,
@@ -63,9 +65,12 @@ class Popup {
 
 			instance.$on('destroyed', payload => {
 				const parentNode = instance.$el.parentNode
+
 				if (parentNode) {
 					parentNode.removeChild(instance.$el)
 				}
+
+				delete this._popups[popup.id]
 				resolve(payload)
 			})
 

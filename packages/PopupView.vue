@@ -1,6 +1,7 @@
 <template lang="pug">
-.popup-view(:class="{ 'popup-view-leave': leave }" :style="styleObject")
-	component(:is="componentConfig" v-bind="componentProps")
+transition(name="popup-view")
+	.popup-view(:style="styleObject" v-if="!leave")
+		component(:is="componentConfig" v-bind="componentProps")
 </template>
 <script>
 import { deepClone } from '../src/utils'
@@ -17,41 +18,37 @@ export default {
 				return {}
 			}
 		},
-		animationDuration: {
-			type: Number,
-			default: 100
+		leave: {
+			type: Boolean,
+			default: false
 		},
 		zIndex: {
 			type: Number
 		},
 		width: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
 		},
 		maxWidth: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
 		},
 		minWidth: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
 		},
 		height: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
 		},
 		maxHeight: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
 		},
 		minHeight: {
-			type: [Number, String],
-			default: 'auto'
+			type: [Number, String]
+		},
+		animationDuration: {
+			type: Number
 		}
 	},
 	data() {
 		return {
-			leave: false,
 			contentWidth: 0,
 			contentHeight: 0,
 			componentConfig: null,
@@ -94,10 +91,7 @@ export default {
 					that.instance = this
 
 					this.$on('close', (...args) => {
-						that.leave = true
-						window.setTimeout(() => {
-							that.$emit('close', ...args)
-						}, that.animationDuration)
+						that.$emit('close', ...args)
 					})
 
 					this.$on('resize', () => {
@@ -159,7 +153,7 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .popup-view
 	position fixed
 	top 0
@@ -168,17 +162,18 @@ export default {
 	left 0
 	margin auto
 	animation-name enter
-	&.popup-view-leave
-		opacity 0
-		transform scale(0)
-		animation-name leave
 	&>*
 		display inline-block
+.popup-view-leave-active
+	animation-name leave
 @keyframes enter
-	from
+	0%
 		opacity 0
-		transform scale(0)
-	to
+		transform scale(1)
+	1%
+		opacity 0
+		transform scale(0.5)
+	100%
 		opacity 1
 		transform scale(1)
 @keyframes leave
@@ -187,5 +182,5 @@ export default {
 		transform scale(1)
 	to
 		opacity 0
-		transform scale(0)
+		transform scale(0.5)
 </style>
