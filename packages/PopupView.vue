@@ -1,8 +1,10 @@
 <template lang="pug">
 .popup-view(:class="{ 'popup-view-leave': leave }" :style="styleObject")
-	div(ref="content")
+	component(:is="componentConfig" v-bind="componentProps")
 </template>
 <script>
+import { deepClone } from '../src/utils'
+
 export default {
 	name: 'PopupView',
 	props: {
@@ -52,6 +54,7 @@ export default {
 			leave: false,
 			contentWidth: 0,
 			contentHeight: 0,
+			componentConfig: null,
 			instance: null
 		}
 	},
@@ -75,38 +78,39 @@ export default {
 	},
 	methods: {
 		async renderComponent() {
+			const that = this
+
 			let config = this.component
 			if (typeof config === 'function') {
 				config = (await config()).default
 			}
 
+			config = deepClone(config)
+
 			config.mixins = config.mixins || []
 
 			config.mixins.push({
+				beforeCreate() {
+					that.instance = this
+
+					this.$on('close', (...args) => {
+						that.leave = true
+						window.setTimeout(() => {
+							that.$emit('close', ...args)
+						}, that.animationDuration)
+					})
+
+					this.$on('resize', () => {
+						that.sizeFix()
+					})
+				},
 				async mounted() {
 					await this.$nextTick()
 					this.$emit('resize')
 				}
 			})
 
-			const Constructor = this.Vue.extend(config)
-
-			this.instance = new Constructor({
-				propsData: this.componentProps
-			})
-
-			this.instance.$on('close', (...args) => {
-				this.leave = true
-				window.setTimeout(() => {
-					this.$emit('close', ...args)
-				}, this.animationDuration)
-			})
-
-			this.instance.$on('resize', () => {
-				this.sizeFix()
-			})
-
-			this.instance.$mount(this.$refs.content)
+			this.componentConfig = config
 		},
 		async sizeFix() {
 			await this.$nextTick()
