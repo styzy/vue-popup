@@ -1,5 +1,5 @@
 <template lang="pug">
-.popup
+.popup(v-if="!needDestroy")
 	PopupMask(:zIndex="zIndex" @click="maskClickHandler" v-if="mask")
 	PopupView(
 		:Vue="Vue"
@@ -40,6 +40,7 @@ export default {
 	},
 	data() {
 		return {
+			needDestroy: false,
 			destroyPayload: undefined
 		}
 	},
@@ -48,8 +49,10 @@ export default {
 			if (!this.maskClickClose) return
 			this.closeHandler()
 		},
-		closeHandler(payload) {
+		async closeHandler(payload) {
 			this.destroyPayload = payload
+			this.needDestroy = true
+			await this.$nextTick()
 			this.$destroy()
 		}
 	},
