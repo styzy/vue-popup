@@ -1,6 +1,6 @@
 import _Popup from '../packages/Popup.vue'
 
-const version = '0.2.1'
+const version = '0.2.2'
 class Popup {
 	constructor({ zIndex } = { zIndex: 1000 }) {
 		this._seed = 0
