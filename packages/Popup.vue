@@ -47,6 +47,9 @@ export default {
 		}
 	},
 	methods: {
+		destroy() {
+			this.closeHandler()
+		},
 		async closeHandler(payload) {
 			this.destroyPayload = payload
 			this.leave = true

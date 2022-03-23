@@ -1,6 +1,6 @@
 import _Popup from '../packages/Popup.vue'
 
-const version = '0.3.0'
+const version = '0.3.1'
 class Popup {
 	constructor({ zIndex = 1000 } = {}) {
 		this._seed = 0
@@ -27,11 +27,13 @@ class Popup {
 		return popup
 	}
 	_destroy(popup) {
+		if (!this._popups[popup.id]) return
+
 		const { instance } = popup
 
 		if (!instance) return
 
-		instance.$emit('close')
+		instance.destroy()
 	}
 	render({
 		mask = true,
