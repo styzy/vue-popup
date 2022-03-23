@@ -1,6 +1,6 @@
 import _Popup from '../packages/Popup.vue'
 
-const version = '0.2.4'
+const version = '0.3.0'
 class Popup {
 	constructor({ zIndex = 1000 } = {}) {
 		this._seed = 0
@@ -26,6 +26,13 @@ class Popup {
 		this._popups[id] = popup
 		return popup
 	}
+	_destroy(popup) {
+		const { instance } = popup
+
+		if (!instance) return
+
+		instance.$emit('close')
+	}
 	render({
 		mask = true,
 		maskClickClose = false,
@@ -37,7 +44,9 @@ class Popup {
 		minWidth = 'auto',
 		height = 'auto',
 		maxHeight = 'auto',
-		minHeight = 'auto'
+		minHeight = 'auto',
+		mounted = () => {},
+		destroyed = () => {}
 	} = {}) {
 		const options = {
 			mask,
@@ -52,34 +61,41 @@ class Popup {
 			maxHeight,
 			minHeight
 		}
-		return new Promise(resolve => {
-			const popup = this._create(),
-				instance = new this._PopupConstructor({
-					propsData: Object.assign({}, options, {
-						Vue: Popup.Vue,
-						zIndex: this._getZIndex(),
-						originConfig: options
-					})
+		const popup = this._create(),
+			instance = new this._PopupConstructor({
+				propsData: Object.assign({}, options, {
+					Vue: Popup.Vue,
+					zIndex: this._getZIndex(),
+					originConfig: options
 				})
-
-			instance.$on('destroyed', payload => {
-				const parentNode = instance.$el.parentNode
-
-				if (parentNode) {
-					parentNode.removeChild(instance.$el)
-				}
-
-				delete this._popups[popup.id]
-				resolve(payload)
 			})
 
-			const el = document.createElement('div')
-			document.body.appendChild(el)
-
-			instance.$mount(el)
-
-			popup.instance = instance
+		instance.$on('mounted', () => {
+			mounted && mounted(instance)
 		})
+
+		instance.$on('destroyed', payload => {
+			destroyed && destroyed(payload)
+
+			const parentNode = instance.$el.parentNode
+
+			if (parentNode) {
+				parentNode.removeChild(instance.$el)
+			}
+
+			delete this._popups[popup.id]
+		})
+
+		const el = document.createElement('div')
+		document.body.appendChild(el)
+
+		instance.$mount(el)
+
+		popup.instance = instance
+
+		return () => {
+			this._destroy(popup)
+		}
 	}
 }
 
