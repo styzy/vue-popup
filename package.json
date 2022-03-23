@@ -20,8 +20,8 @@
 		"type": "git",
 		"url": "git@github.com:styzy/vue-popup.git"
 	},
-	"main1": "src/index.js",
-	"main": "lib/vue-popup.common.js",
+	"main": "src/index.js",
+	"main1": "lib/vue-popup.common.js",
 	"private": false,
 	"license": "MIT",
 	"scripts": {
