@@ -1,24 +1,77 @@
-import _Popup from '../packages/Popup.vue'
+import PopupComponent from '../packages/Popup.vue'
+import { typeOf } from './utils'
 
-const version = '0.3.2'
+const version = '0.4.0'
+
+const plugins = {}
+
 class Popup {
-	constructor({ zIndex = 1000 } = {}) {
-		this._seed = 0
-		this._zIndex = zIndex || 1000
-		this._popups = {}
-		window.popups = this._popups
-		this._PopupConstructor = Popup.Vue.extend(_Popup)
+	static get version() {
+		return version
 	}
-	_getZIndex() {
+	static get plugins() {
+		return plugins
+	}
+	static _usePlugin(name, install) {
+		this.plugins[name] = install
+
+		install(this)
+	}
+	static install(Vue) {
+		Vue.component(PopupComponent.name, PopupComponent)
+
+		this.Vue = Vue
+
+		Vue.mixin({
+			beforeCreate() {
+				if (
+					this.$options.popup &&
+					this.$options.popup instanceof Popup
+				) {
+					Vue.prototype.$popup = this.$options.popup
+				}
+			}
+		})
+	}
+	static use(plugin) {
+		if (!plugin) return
+		const { name, install = () => {} } = plugin
+
+		if (this.plugins[name])
+			throw new Error(`Popup: exist plugin name: ${name}`)
+
+		if (typeOf(install) !== 'Function')
+			throw new Error(`Popup: plugin's prop install must be a function`)
+
+		this._usePlugin(name, install)
+	}
+	get seed() {
+		return this._seed
+	}
+	get zIndex() {
 		const zIndex = this._zIndex
 		this._zIndex += 2
 		return zIndex
 	}
-	_createId() {
-		return `styzy-vue-popup-${this._seed++}`
+	get popups() {
+		return this._popups
+	}
+	get PopupConstructor() {
+		return this._PopupConstructor
+	}
+	get $root() {
+		return this._root
+	}
+	constructor({ zIndex = 1000, $root } = {}) {
+		this._seed = 0
+		this._zIndex = zIndex || 1000
+		this._popups = {}
+		this._root = $root
+		PopupComponent.parent = $root
+		this._PopupConstructor = Popup.Vue.extend(PopupComponent)
 	}
 	_create() {
-		const id = this._createId(),
+		const id = `styzy-vue-popup-${this.seed}`,
 			popup = {
 				id,
 				instance: null
@@ -67,7 +120,7 @@ class Popup {
 			instance = new this._PopupConstructor({
 				propsData: Object.assign({}, options, {
 					Vue: Popup.Vue,
-					zIndex: this._getZIndex(),
+					zIndex: this.zIndex,
 					originConfig: options
 				})
 			})
@@ -100,12 +153,5 @@ class Popup {
 		}
 	}
 }
-
-Popup.install = function (Vue) {
-	Vue.component(_Popup.name, _Popup)
-	Popup.Vue = Vue
-}
-
-Popup.version = version
 
 export default Popup
