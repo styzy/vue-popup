@@ -7,7 +7,6 @@
 		v-bind="originConfig"
 	)
 	PopupView(
-		:Vue="Vue"
 		:leave="leave"
 		:zIndex="zIndex"
 		@close="closeHandler"
@@ -15,18 +14,14 @@
 	)
 </template>
 <script>
-import PopupMask from './PopupMask.vue'
-import PopupView from './PopupView.vue'
-
 export default {
 	name: 'Popup',
 	components: {
-		PopupMask: PopupMask,
-		PopupView: PopupView
+		PopupMask: () => import('./PopupMask.vue'),
+		PopupView: () => import('./PopupView.vue')
 	},
 	inheritAttrs: false,
 	props: {
-		Vue: {},
 		id: {
 			type: String,
 			default: ''

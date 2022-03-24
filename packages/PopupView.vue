@@ -9,7 +9,6 @@ import { deepClone } from '../src/utils'
 export default {
 	name: 'PopupView',
 	props: {
-		Vue: {},
 		component: {
 			type: [Object, Function]
 		},

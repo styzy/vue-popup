@@ -1,9 +1,10 @@
+import Vue from 'vue'
 import PopupComponent from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.4.1'
-
-const plugins = {}
+const version = '0.5.0',
+	config = { propertyName: '$popup', zIndex: 1000 },
+	plugins = {}
 
 class Popup {
 	static get version() {
@@ -18,20 +19,21 @@ class Popup {
 		install(this)
 	}
 	static install(Vue) {
-		Vue.component(PopupComponent.name, PopupComponent)
+		try {
+			const { propertyName } = config
 
-		this.Vue = Vue
+			if (!propertyName)
+				throw `Install fail. Popup config attribute propertyName is necessary.`
 
-		Vue.mixin({
-			beforeCreate() {
-				if (
-					this.$options.popup &&
-					this.$options.popup instanceof Popup
-				) {
-					Vue.prototype.$popup = this.$options.popup
-				}
-			}
-		})
+			if (propertyName in Vue.prototype)
+				throw `Install fail. Popup config attribute propertyName as '${propertyName}' already exists in Vue prototype.`
+
+			Vue.prototype[propertyName] = new Popup()
+
+			Vue.component(PopupComponent.name, PopupComponent)
+		} catch (error) {
+			console.error(`Popup: ${error}`)
+		}
 	}
 	static use(plugin) {
 		if (!plugin) return
@@ -44,6 +46,9 @@ class Popup {
 			throw new Error(`Popup: plugin's prop install must be a function`)
 
 		this._usePlugin(name, install)
+	}
+	static config(customConfig = {}) {
+		Object.assign(config, customConfig)
 	}
 	get seed() {
 		return this._seed
@@ -59,11 +64,12 @@ class Popup {
 	get PopupConstructor() {
 		return this._PopupConstructor
 	}
-	constructor({ zIndex = 1000 } = {}) {
+	constructor() {
+		const { zIndex } = config
 		this._seed = 0
-		this._zIndex = zIndex || 1000
+		this._zIndex = zIndex
 		this._popups = {}
-		this._PopupConstructor = Popup.Vue.extend(PopupComponent)
+		this._PopupConstructor = Vue.extend(PopupComponent)
 	}
 	_create() {
 		const id = `styzy-vue-popup-${this.seed}`,
@@ -114,11 +120,12 @@ class Popup {
 		const popup = this._create(),
 			instance = new this._PopupConstructor({
 				propsData: Object.assign({}, options, {
-					Vue: Popup.Vue,
 					zIndex: this.zIndex,
 					originConfig: options
 				})
 			})
+
+		popup.instance = instance
 
 		instance.$on('mounted', () => {
 			mounted && mounted(instance)
@@ -136,12 +143,9 @@ class Popup {
 			delete this._popups[popup.id]
 		})
 
-		const el = document.createElement('div')
-		document.body.appendChild(el)
+		instance.$mount()
 
-		instance.$mount(el)
-
-		popup.instance = instance
+		document.body.appendChild(instance.$el)
 
 		return () => {
 			this._destroy(popup)
