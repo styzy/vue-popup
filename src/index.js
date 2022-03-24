@@ -2,7 +2,7 @@ import Vue from 'vue'
 import PopupComponent from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.5.0',
+const version = '0.5.1',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
