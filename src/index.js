@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import PopupComponent from '../packages/Popup.vue'
+import _Popup from '../packages/Popup.vue'
+import PopupMask from '../packages/PopupMask.vue'
+import PopupView from '../packages/PopupView.vue'
 import { typeOf } from './utils'
 
-const version = '0.5.1',
+const version = '0.6.0',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -30,7 +32,9 @@ class Popup {
 
 			Vue.prototype[propertyName] = new Popup()
 
-			Vue.component(PopupComponent.name, PopupComponent)
+			Vue.component(_Popup.name, _Popup)
+			Vue.component(PopupMask.name, PopupMask)
+			Vue.component(PopupView.name, PopupView)
 		} catch (error) {
 			console.error(`Popup: ${error}`)
 		}
@@ -69,7 +73,7 @@ class Popup {
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}
-		this._PopupConstructor = Vue.extend(PopupComponent)
+		this._PopupConstructor = Vue.extend(_Popup)
 	}
 	_create() {
 		const id = `styzy-vue-popup-${this.seed}`,
