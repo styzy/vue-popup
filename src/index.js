@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
-import PopupMask from '../packages/PopupMask.vue'
-import PopupView from '../packages/PopupView.vue'
 import { typeOf } from './utils'
 
-const version = '0.6.0',
+const version = '0.7.0',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -31,10 +29,6 @@ class Popup {
 				throw `Install fail. Popup config attribute propertyName as '${propertyName}' already exists in Vue prototype.`
 
 			Vue.prototype[propertyName] = new Popup()
-
-			Vue.component(_Popup.name, _Popup)
-			Vue.component(PopupMask.name, PopupMask)
-			Vue.component(PopupView.name, PopupView)
 		} catch (error) {
 			console.error(`Popup: ${error}`)
 		}
