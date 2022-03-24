@@ -1,10 +1,6 @@
 <template lang="pug">
 transition(name="popup-mask")
-	.popup-mask(
-		:style="styleObject"
-		@click="clickHandler"
-		v-if="mask && !leave"
-	)
+	.popup-mask(:style="styleObject" @click="clickHandler" v-if="!leave")
 </template>
 <script>
 export default {
@@ -17,9 +13,6 @@ export default {
 		},
 		zIndex: {
 			type: Number
-		},
-		mask: {
-			type: Boolean
 		},
 		maskClickClose: {
 			type: Boolean

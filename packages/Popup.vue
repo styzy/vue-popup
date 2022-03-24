@@ -2,16 +2,11 @@
 .popup(v-if="!destroyed")
 	PopupMask(
 		:leave="leave"
-		:zIndex="zIndex"
 		@close="closeHandler"
-		v-bind="originConfig"
+		v-bind="maskProps"
+		v-if="mask"
 	)
-	PopupView(
-		:leave="leave"
-		:zIndex="zIndex"
-		@close="closeHandler"
-		v-bind="originConfig"
-	)
+	PopupView(:leave="leave" @close="closeHandler" v-bind="viewProps")
 </template>
 <script>
 import PopupMask from './PopupMask'
@@ -25,17 +20,28 @@ export default {
 	},
 	inheritAttrs: false,
 	props: {
-		id: {
+		popupId: {
 			type: String,
 			default: ''
 		},
-		zIndex: {
-			type: Number
+		mask: {
+			type: Boolean
 		},
 		animationDuration: {
 			type: Number
 		},
-		originConfig: {}
+		maskProps: {
+			type: Object,
+			default: () => {
+				return {}
+			}
+		},
+		viewProps: {
+			type: Object,
+			default: () => {
+				return {}
+			}
+		}
 	},
 	data() {
 		return {

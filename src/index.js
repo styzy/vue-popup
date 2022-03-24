@@ -2,7 +2,7 @@ import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.7.0',
+const version = '0.7.2',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -116,11 +116,30 @@ class Popup {
 			minHeight
 		}
 		const popup = this._create(),
+			zIndex = this.zIndex,
 			instance = new this._PopupConstructor({
-				propsData: Object.assign({}, options, {
-					zIndex: this.zIndex,
-					originConfig: options
-				})
+				propsData: {
+					popupId: popup.id,
+					mask,
+					animationDuration,
+					maskProps: {
+						zIndex,
+						maskClickClose,
+						animationDuration
+					},
+					viewProps: {
+						zIndex,
+						component,
+						componentProps,
+						animationDuration,
+						width,
+						maxWidth,
+						minWidth,
+						height,
+						maxHeight,
+						minHeight
+					}
+				}
 			})
 
 		popup.instance = instance

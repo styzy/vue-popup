@@ -9,6 +9,16 @@ import { deepClone } from '../src/utils'
 export default {
 	name: 'PopupView',
 	props: {
+		leave: {
+			type: Boolean,
+			default: false
+		},
+		zIndex: {
+			type: Number
+		},
+		animationDuration: {
+			type: Number
+		},
 		component: {
 			type: [Object, Function]
 		},
@@ -16,13 +26,6 @@ export default {
 			default: () => {
 				return {}
 			}
-		},
-		leave: {
-			type: Boolean,
-			default: false
-		},
-		zIndex: {
-			type: Number
 		},
 		width: {
 			type: [Number, String]
@@ -41,9 +44,6 @@ export default {
 		},
 		minHeight: {
 			type: [Number, String]
-		},
-		animationDuration: {
-			type: Number
 		}
 	},
 	data() {
