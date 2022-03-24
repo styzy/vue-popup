@@ -1,7 +1,7 @@
 import PopupComponent from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.4.0'
+const version = '0.4.1'
 
 const plugins = {}
 
@@ -59,15 +59,10 @@ class Popup {
 	get PopupConstructor() {
 		return this._PopupConstructor
 	}
-	get $root() {
-		return this._root
-	}
-	constructor({ zIndex = 1000, $root } = {}) {
+	constructor({ zIndex = 1000 } = {}) {
 		this._seed = 0
 		this._zIndex = zIndex || 1000
 		this._popups = {}
-		this._root = $root
-		PopupComponent.parent = $root
 		this._PopupConstructor = Popup.Vue.extend(PopupComponent)
 	}
 	_create() {
