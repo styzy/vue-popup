@@ -2,7 +2,7 @@ import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.7.3',
+const version = '0.7.4',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -49,7 +49,7 @@ class Popup {
 		Object.assign(config, customConfig)
 	}
 	get seed() {
-		return this._seed
+		return this._seed++
 	}
 	get zIndex() {
 		const zIndex = this._zIndex
@@ -73,25 +73,19 @@ class Popup {
 		const id = `styzy-vue-popup-${this.seed}`,
 			popup = {
 				id,
-				instance: null,
-				mounted: false,
-				needDestroy: false
+				instance: null
 			}
-		this._popups[id] = popup
+		this.popups[id] = popup
 		return popup
 	}
 	_destroy(popup) {
-		if (!this._popups[popup.id]) return
+		if (!this.popups[popup.id]) return
 
 		const { instance } = popup
 
 		if (!instance) return
 
-		if (popup.mounted) {
-			instance.destroy()
-		} else {
-			popup.needDestroy = true
-		}
+		instance.destroy()
 	}
 	render({
 		mask = true,
@@ -139,12 +133,6 @@ class Popup {
 
 		instance.$on('mounted', () => {
 			mounted && mounted(instance)
-
-			popup.mounted = true
-
-			if (popup.needDestroy) {
-				instance.destroy()
-			}
 		})
 
 		instance.$on('destroyed', payload => {
@@ -156,7 +144,7 @@ class Popup {
 				parentNode.removeChild(instance.$el)
 			}
 
-			delete this._popups[popup.id]
+			delete this.popups[popup.id]
 		})
 
 		instance.$mount()

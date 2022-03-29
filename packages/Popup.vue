@@ -50,6 +50,12 @@ export default {
 			destroyPayload: undefined
 		}
 	},
+	mounted() {
+		this.$emit('mounted')
+	},
+	destroyed() {
+		this.$emit('destroyed', this.destroyPayload)
+	},
 	methods: {
 		destroy() {
 			this.closeHandler()
@@ -71,9 +77,6 @@ export default {
 				window.setTimeout(resolve, time)
 			})
 		}
-	},
-	destroyed() {
-		this.$emit('destroyed', this.destroyPayload)
 	}
 }
 </script>
