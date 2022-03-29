@@ -2,7 +2,7 @@ import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.7.2',
+const version = '0.7.3',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -73,7 +73,9 @@ class Popup {
 		const id = `styzy-vue-popup-${this.seed}`,
 			popup = {
 				id,
-				instance: null
+				instance: null,
+				mounted: false,
+				needDestroy: false
 			}
 		this._popups[id] = popup
 		return popup
@@ -85,7 +87,11 @@ class Popup {
 
 		if (!instance) return
 
-		instance.destroy()
+		if (popup.mounted) {
+			instance.destroy()
+		} else {
+			popup.needDestroy = true
+		}
 	}
 	render({
 		mask = true,
@@ -102,19 +108,6 @@ class Popup {
 		mounted = () => {},
 		destroyed = () => {}
 	} = {}) {
-		const options = {
-			mask,
-			maskClickClose,
-			component,
-			componentProps,
-			animationDuration,
-			width,
-			maxWidth,
-			minWidth,
-			height,
-			maxHeight,
-			minHeight
-		}
 		const popup = this._create(),
 			zIndex = this.zIndex,
 			instance = new this._PopupConstructor({
@@ -146,6 +139,12 @@ class Popup {
 
 		instance.$on('mounted', () => {
 			mounted && mounted(instance)
+
+			popup.mounted = true
+
+			if (popup.needDestroy) {
+				instance.destroy()
+			}
 		})
 
 		instance.$on('destroyed', payload => {
