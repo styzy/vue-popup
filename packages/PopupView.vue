@@ -1,20 +1,28 @@
 <template lang="pug">
-transition(name="popup-view")
-	.popup-view(:style="styleObject" v-if="!leave")
+transition
+	.popup-view(
+		:class="classObject"
+		:style="styleObject"
+		v-if="isShow && !isLeave"
+	)
 		component(:is="componentConfig" v-bind="componentProps")
 </template>
 <script>
+import { ANIMATION_TYPES } from '../src/CONSTANTS'
 import { deepClone } from '../src/utils'
 
 export default {
 	name: 'PopupView',
 	props: {
-		leave: {
+		isLeave: {
 			type: Boolean,
 			default: false
 		},
 		zIndex: {
 			type: Number
+		},
+		animations: {
+			type: Array
 		},
 		animationDuration: {
 			type: Number
@@ -48,6 +56,7 @@ export default {
 	},
 	data() {
 		return {
+			isShow: false,
 			contentWidth: 0,
 			contentHeight: 0,
 			componentConfig: null,
@@ -55,6 +64,18 @@ export default {
 		}
 	},
 	computed: {
+		classObject() {
+			return {
+				[`animation-${ANIMATION_TYPES.FADE}`]: this.animations.includes(
+					ANIMATION_TYPES.FADE
+				),
+				[`animation-${ANIMATION_TYPES.SCALE}`]:
+					this.animations.includes(ANIMATION_TYPES.SCALE),
+				[`animation-${ANIMATION_TYPES.FLY}`]: this.animations.includes(
+					ANIMATION_TYPES.FLY
+				)
+			}
+		},
 		styleObject() {
 			return {
 				zIndex: this.zIndex,
@@ -70,6 +91,10 @@ export default {
 		}
 	},
 	created() {
+		window.setTimeout(() => {
+			this.isShow = true
+		}, 0)
+
 		this.renderComponent()
 	},
 	methods: {
@@ -153,33 +178,18 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import './animation.styl'
+
 .popup-view
+	useAnimation()
+
 	position fixed
 	top 0
 	right 0
 	bottom 0
 	left 0
 	margin auto
-	animation-name enter
+	animation-timing-function linear
 	&>*
 		display inline-block
-.popup-view-leave-active
-	animation-name leave
-@keyframes enter
-	0%
-		opacity 0
-		transform scale(1)
-	1%
-		opacity 0
-		transform scale(0.5)
-	100%
-		opacity 1
-		transform scale(1)
-@keyframes leave
-	from
-		opacity 1
-		transform scale(1)
-	to
-		opacity 0
-		transform scale(0.5)
 </style>

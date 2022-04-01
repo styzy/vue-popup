@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
-import { typeOf } from './utils'
+import { ANIMATION_TYPES } from './CONSTANTS'
+import { typeOf, deepClone } from './utils'
 
-const version = '0.8.0',
+const version = '0.9.0',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -12,6 +13,9 @@ class Popup {
 	}
 	static get plugins() {
 		return plugins
+	}
+	static get ANIMATION_TYPES() {
+		return deepClone(ANIMATION_TYPES)
 	}
 	static _usePlugin(name, install) {
 		this.plugins[name] = install
@@ -91,6 +95,8 @@ class Popup {
 		maskClickClose = false,
 		component,
 		componentProps,
+		maskAnimations = [ANIMATION_TYPES.FADE],
+		viewAnimations = [ANIMATION_TYPES.FADE, ANIMATION_TYPES.SCALE],
 		animationDuration = 100,
 		width = 'auto',
 		maxWidth = 'auto',
@@ -101,21 +107,25 @@ class Popup {
 		mounted = () => {},
 		destroyed = () => {}
 	} = {}) {
-		const popup = this._create(),
+		const el = document.body.appendChild(document.createElement('div')),
+			popup = this._create(),
 			instance = new this._PopupConstructor({
 				propsData: {
+					key: popup.id,
 					popupId: popup.id,
 					mask,
 					animationDuration,
 					maskProps: {
 						zIndex,
 						maskClickClose,
+						animations: maskAnimations,
 						animationDuration
 					},
 					viewProps: {
 						zIndex,
 						component,
 						componentProps,
+						animations: viewAnimations,
 						animationDuration,
 						width,
 						maxWidth,
@@ -145,9 +155,7 @@ class Popup {
 			delete this.popups[popup.id]
 		})
 
-		instance.$mount()
-
-		document.body.appendChild(instance.$el)
+		instance.$mount(el)
 
 		return () => {
 			this._destroy(popup)

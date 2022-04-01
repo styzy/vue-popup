@@ -1,12 +1,12 @@
 <template lang="pug">
 .popup(v-if="!destroyed")
 	PopupMask(
-		:leave="leave"
+		:isLeave="isLeave"
 		@close="closeHandler"
 		v-bind="maskProps"
 		v-if="mask"
 	)
-	PopupView(:leave="leave" @close="closeHandler" v-bind="viewProps")
+	PopupView(:isLeave="isLeave" @close="closeHandler" v-bind="viewProps")
 </template>
 <script>
 import PopupMask from './PopupMask'
@@ -45,7 +45,7 @@ export default {
 	},
 	data() {
 		return {
-			leave: false,
+			isLeave: false,
 			destroyed: false,
 			destroyPayload: undefined
 		}
@@ -62,7 +62,7 @@ export default {
 		},
 		async closeHandler(payload) {
 			this.destroyPayload = payload
-			this.leave = true
+			this.isLeave = true
 
 			await this.wait(this.animationDuration)
 
