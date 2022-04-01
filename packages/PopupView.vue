@@ -57,7 +57,7 @@ export default {
 	computed: {
 		styleObject() {
 			return {
-				zIndex: this.zIndex + 1,
+				zIndex: this.zIndex,
 				animationDuration: `${this.animationDuration / 1000}s`,
 				width: this.sizeFormat(this.width) || `${this.contentWidth}px`,
 				maxWidth: this.sizeFormat(this.maxWidth) || 'auto',

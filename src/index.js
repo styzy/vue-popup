@@ -2,7 +2,7 @@ import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { typeOf } from './utils'
 
-const version = '0.7.4',
+const version = '0.8.0',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -52,9 +52,7 @@ class Popup {
 		return this._seed++
 	}
 	get zIndex() {
-		const zIndex = this._zIndex
-		this._zIndex += 2
-		return zIndex
+		return this._zIndex++
 	}
 	get popups() {
 		return this._popups
@@ -88,6 +86,7 @@ class Popup {
 		instance.destroy()
 	}
 	render({
+		zIndex = this.zIndex,
 		mask = true,
 		maskClickClose = false,
 		component,
@@ -103,7 +102,6 @@ class Popup {
 		destroyed = () => {}
 	} = {}) {
 		const popup = this._create(),
-			zIndex = this.zIndex,
 			instance = new this._PopupConstructor({
 				propsData: {
 					popupId: popup.id,
