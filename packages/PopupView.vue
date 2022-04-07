@@ -5,13 +5,15 @@ transition
 		:style="styleObject"
 		v-if="isShow && !isLeave"
 	)
-		component(
-			:is="componentConfig"
-			:key="`view-component-${popupId}`"
-			v-bind="componentProps"
-		)
+		//- component(
+		//- :is="componentConfig"
+		//- :key="`view-component-${popupId}`"
+		//- v-bind="componentProps"
+		//- )
+		div(ref="component")
 </template>
 <script>
+import Vue from 'vue'
 import { ANIMATION_TYPES } from '../src/CONSTANTS'
 import { deepClone } from '../src/utils'
 
@@ -67,7 +69,7 @@ export default {
 			isShow: false,
 			contentWidth: 0,
 			contentHeight: 0,
-			componentConfig: null,
+			// componentConfig: null,
 			instance: null
 		}
 	},
@@ -107,6 +109,43 @@ export default {
 	},
 	methods: {
 		async renderComponent() {
+			const that = this
+
+			let config = this.component
+			if (typeof config === 'function') {
+				config = (await config()).default
+			}
+
+			config = deepClone(config)
+
+			config.mixins = config.mixins || []
+
+			config.mixins.push({
+				beforeCreate() {
+					that.instance = this
+
+					this.$on('close', (...args) => {
+						that.$emit('close', ...args)
+					})
+
+					this.$on('resize', () => {
+						that.sizeFix()
+					})
+				},
+				async mounted() {
+					await this.$nextTick()
+					this.$emit('resize')
+				}
+			})
+
+			this.instance = new Vue(
+				Object.assign({}, config, {
+					parent: this,
+					propsData: this.componentProps
+				})
+			).$mount(this.$refs.component)
+		},
+		async renderComponent1() {
 			const that = this
 
 			let config = this.component

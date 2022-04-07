@@ -3,7 +3,7 @@ import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '0.9.2',
+const version = '0.9.3',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
