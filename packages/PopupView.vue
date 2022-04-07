@@ -5,12 +5,12 @@ transition
 		:style="styleObject"
 		v-if="isShow && !isLeave"
 	)
-		//- component(
-		//- :is="componentConfig"
-		//- :key="`view-component-${popupId}`"
-		//- v-bind="componentProps"
-		//- )
-		div(ref="component")
+		component(
+			:is="componentConfig"
+			:key="`popup-view-component-${popupId}`"
+			v-bind="componentProps"
+		)
+		//- div(ref="component")
 </template>
 <script>
 import Vue from 'vue'
@@ -69,7 +69,7 @@ export default {
 			isShow: false,
 			contentWidth: 0,
 			contentHeight: 0,
-			// componentConfig: null,
+			componentConfig: null,
 			instance: null
 		}
 	},
@@ -100,7 +100,7 @@ export default {
 			}
 		}
 	},
-	mounted() {
+	created() {
 		window.setTimeout(() => {
 			this.isShow = true
 		}, 0)
@@ -108,7 +108,7 @@ export default {
 		this.renderComponent()
 	},
 	methods: {
-		async renderComponent() {
+		async renderComponent1() {
 			const that = this
 
 			let config = this.component
@@ -147,7 +147,7 @@ export default {
 				})
 			).$mount(this.$refs.component)
 		},
-		async renderComponent1() {
+		async renderComponent() {
 			const that = this
 
 			let config = this.component
