@@ -3,7 +3,7 @@ import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '0.9.3',
+const version = '0.9.4',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -108,18 +108,20 @@ class Popup {
 			popupId = popup.id,
 			instance = new Vue(
 				Object.assign({}, _Popup, {
-					key: `popup-${popupId}`,
 					propsData: {
+						key: `popup-${popupId}`,
 						popupId,
 						mask,
 						animationDuration,
 						maskProps: {
+							key: `popup-mask-${popupId}`,
 							zIndex,
 							maskClickClose,
 							animations: maskAnimations,
 							animationDuration
 						},
 						viewProps: {
+							key: `popup-view-${popupId}`,
 							popupId,
 							zIndex,
 							component,

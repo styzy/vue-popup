@@ -100,7 +100,7 @@ export default {
 			}
 		}
 	},
-	created() {
+	mounted() {
 		window.setTimeout(() => {
 			this.isShow = true
 		}, 0)
@@ -141,7 +141,9 @@ export default {
 			this.instance = new Vue(
 				Object.assign({}, config, {
 					parent: this,
-					propsData: this.componentProps
+					propsData: Object.assign({}, this.componentProps, {
+						key: `popup-view-component-${this.popupId}`
+					})
 				})
 			).$mount(this.$refs.component)
 		},
