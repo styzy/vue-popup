@@ -2,11 +2,17 @@
 .popup(v-if="!destroyed")
 	PopupMask(
 		:isLeave="isLeave"
+		:key="`mask-${popupId}`"
 		@close="closeHandler"
 		v-bind="maskProps"
 		v-if="mask"
 	)
-	PopupView(:isLeave="isLeave" @close="closeHandler" v-bind="viewProps")
+	PopupView(
+		:isLeave="isLeave"
+		:key="`view-${popupId}`"
+		@close="closeHandler"
+		v-bind="viewProps"
+	)
 </template>
 <script>
 import PopupMask from './PopupMask'

@@ -5,7 +5,11 @@ transition
 		:style="styleObject"
 		v-if="isShow && !isLeave"
 	)
-		component(:is="componentConfig" v-bind="componentProps")
+		component(
+			:is="componentConfig"
+			:key="`view-component-${popupId}`"
+			v-bind="componentProps"
+		)
 </template>
 <script>
 import { ANIMATION_TYPES } from '../src/CONSTANTS'
@@ -14,6 +18,10 @@ import { deepClone } from '../src/utils'
 export default {
 	name: 'PopupView',
 	props: {
+		popupId: {
+			type: String,
+			default: ''
+		},
 		isLeave: {
 			type: Boolean,
 			default: false
