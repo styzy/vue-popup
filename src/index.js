@@ -3,7 +3,7 @@ import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '0.9.0',
+const version = '0.9.1',
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -61,15 +61,11 @@ class Popup {
 	get popups() {
 		return this._popups
 	}
-	get PopupConstructor() {
-		return this._PopupConstructor
-	}
 	constructor() {
 		const { zIndex } = config
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}
-		this._PopupConstructor = Vue.extend(_Popup)
 	}
 	_create() {
 		const id = `styzy-vue-popup-${this.seed}`,
@@ -109,33 +105,35 @@ class Popup {
 	} = {}) {
 		const el = document.body.appendChild(document.createElement('div')),
 			popup = this._create(),
-			instance = new this._PopupConstructor({
-				propsData: {
+			instance = new Vue(
+				Object.assign({}, _Popup, {
 					key: popup.id,
-					popupId: popup.id,
-					mask,
-					animationDuration,
-					maskProps: {
-						zIndex,
-						maskClickClose,
-						animations: maskAnimations,
-						animationDuration
-					},
-					viewProps: {
-						zIndex,
-						component,
-						componentProps,
-						animations: viewAnimations,
+					propsData: {
+						popupId: popup.id,
+						mask,
 						animationDuration,
-						width,
-						maxWidth,
-						minWidth,
-						height,
-						maxHeight,
-						minHeight
+						maskProps: {
+							zIndex,
+							maskClickClose,
+							animations: maskAnimations,
+							animationDuration
+						},
+						viewProps: {
+							zIndex,
+							component,
+							componentProps,
+							animations: viewAnimations,
+							animationDuration,
+							width,
+							maxWidth,
+							minWidth,
+							height,
+							maxHeight,
+							minHeight
+						}
 					}
-				}
-			})
+				})
+			)
 
 		popup.instance = instance
 
