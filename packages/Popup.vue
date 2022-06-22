@@ -18,36 +18,16 @@ export default {
 		PopupMask,
 		PopupView
 	},
-	inheritAttrs: false,
-	props: {
-		popupId: {
-			type: String,
-			default: ''
-		},
-		mask: {
-			type: Boolean
-		},
-		animationDuration: {
-			type: Number
-		},
-		maskProps: {
-			type: Object,
-			default: () => {
-				return {}
-			}
-		},
-		viewProps: {
-			type: Object,
-			default: () => {
-				return {}
-			}
-		}
-	},
+	// inheritAttrs: false,
 	data() {
 		return {
 			isLeave: false,
 			destroyed: false,
-			destroyPayload: undefined
+			destroyPayload: undefined,
+			mask: null,
+			animationDuration: null,
+			maskProps: null,
+			viewProps: null
 		}
 	},
 	mounted() {

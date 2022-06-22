@@ -3,7 +3,8 @@ import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '0.9.5',
+const version = '0.9.6',
+	PopupConstructor = Vue.extend(_Popup),
 	config = { propertyName: '$popup', zIndex: 1000 },
 	plugins = {}
 
@@ -105,39 +106,61 @@ class Popup {
 	} = {}) {
 		const el = document.body.appendChild(document.createElement('div')),
 			popup = this._create(),
-			popupId = popup.id,
-			instance = new Vue(
-				Object.assign({}, _Popup, {
-					propsData: {
-						key: `popup-${popupId}`,
-						popupId,
-						mask,
-						animationDuration,
-						maskProps: {
-							key: `popup-mask-${popupId}`,
-							zIndex,
-							maskClickClose,
-							animations: maskAnimations,
-							animationDuration
-						},
-						viewProps: {
-							key: `popup-view-${popupId}`,
-							popupId,
-							zIndex,
-							component,
-							componentProps,
-							animations: viewAnimations,
-							animationDuration,
-							width,
-							maxWidth,
-							minWidth,
-							height,
-							maxHeight,
-							minHeight
-						}
-					}
-				})
-			)
+			instance = new PopupConstructor({
+				mask,
+				animationDuration,
+				maskProps: {
+					zIndex,
+					maskClickClose,
+					animations: maskAnimations,
+					animationDuration
+				},
+				viewProps: {
+					zIndex,
+					component,
+					componentProps,
+					animations: viewAnimations,
+					animationDuration,
+					width,
+					maxWidth,
+					minWidth,
+					height,
+					maxHeight,
+					minHeight
+				}
+			})
+		// instance = new Vue(
+		// 	Object.assign({}, _Popup, {
+		// 		propsData: {
+		// 			key: `popup-${popupId}`,
+		// 			popupId,
+		// 			mask,
+		// 			animationDuration,
+		// 			maskProps: {
+		// 				key: `popup-mask-${popupId}`,
+		// 				zIndex,
+		// 				maskClickClose,
+		// 				animations: maskAnimations,
+		// 				animationDuration
+		// 			},
+		// 			viewProps: {
+		// 				key: `popup-view-${popupId}`,
+		// 				popupId,
+		// 				zIndex,
+		// 				component,
+		// 				componentProps,
+		// 				animations: viewAnimations,
+		// 				animationDuration,
+		// 				width,
+		// 				maxWidth,
+		// 				minWidth,
+		// 				height,
+		// 				maxHeight,
+		// 				minHeight
+		// 			}
+		// 		}
+		// 	})
+		// )
 
 		popup.instance = instance
 
