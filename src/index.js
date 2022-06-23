@@ -2,7 +2,7 @@ import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '1.0.0',
+const version = '1.0.1',
 	plugins = {}
 
 let Vue = null,
