@@ -1,12 +1,12 @@
-import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 
-const version = '0.9.6',
-	PopupConstructor = Vue.extend(_Popup),
-	config = { propertyName: '$popup', zIndex: 1000 },
+const version = '1.0.0',
 	plugins = {}
+
+let Vue = null,
+	rootVm = null
 
 class Popup {
 	static get version() {
@@ -23,20 +23,15 @@ class Popup {
 
 		install(this)
 	}
-	static install(Vue) {
-		try {
-			const { propertyName } = config
+	static install(_Vue) {
+		Vue = _Vue
 
-			if (!propertyName)
-				throw `Install fail. Popup config attribute propertyName is necessary.`
-
-			if (propertyName in Vue.prototype)
-				throw `Install fail. Popup config attribute propertyName as '${propertyName}' already exists in Vue prototype.`
-
-			Vue.prototype[propertyName] = new Popup()
-		} catch (error) {
-			console.error(`Popup: ${error}`)
-		}
+		_Vue.mixin({
+			created() {
+				if (rootVm) return
+				rootVm = this.$root
+			}
+		})
 	}
 	static use(plugin) {
 		if (!plugin) return
@@ -50,9 +45,6 @@ class Popup {
 
 		this._usePlugin(name, install)
 	}
-	static config(customConfig = {}) {
-		Object.assign(config, customConfig)
-	}
 	get seed() {
 		return this._seed++
 	}
@@ -62,11 +54,25 @@ class Popup {
 	get popups() {
 		return this._popups
 	}
-	constructor() {
-		const { zIndex } = config
+	get parentVm() {
+		return this._parentVm
+	}
+	get PopupConstructor() {
+		return this._PopupConstructor
+	}
+	constructor({ zIndex = 1000, parentVm } = {}) {
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}
+		this._parentVm = parentVm
+		this._PopupConstructor = null
+	}
+	_createPopupConstructor() {
+		const parent = this.parentVm || rootVm
+
+		this._PopupConstructor = Vue.extend(
+			Object.assign({}, _Popup, { parent })
+		)
 	}
 	_create() {
 		const id = `styzy-vue-popup-${this.seed}`,
@@ -104,63 +110,35 @@ class Popup {
 		mounted = () => {},
 		destroyed = () => {}
 	} = {}) {
+		if (!this.PopupConstructor) this._createPopupConstructor()
+
 		const el = document.body.appendChild(document.createElement('div')),
 			popup = this._create(),
-			instance = new PopupConstructor({
-				mask,
-				animationDuration,
-				maskProps: {
-					zIndex,
-					maskClickClose,
-					animations: maskAnimations,
-					animationDuration
-				},
-				viewProps: {
-					zIndex,
-					component,
-					componentProps,
-					animations: viewAnimations,
+			instance = new this.PopupConstructor({
+				propsData: {
+					mask,
 					animationDuration,
-					width,
-					maxWidth,
-					minWidth,
-					height,
-					maxHeight,
-					minHeight
+					maskProps: {
+						zIndex,
+						maskClickClose,
+						animations: maskAnimations,
+						animationDuration
+					},
+					viewProps: {
+						zIndex,
+						component,
+						componentProps,
+						animations: viewAnimations,
+						animationDuration,
+						width,
+						maxWidth,
+						minWidth,
+						height,
+						maxHeight,
+						minHeight
+					}
 				}
 			})
-		// instance = new Vue(
-		// 	Object.assign({}, _Popup, {
-		// 		propsData: {
-		// 			key: `popup-${popupId}`,
-		// 			popupId,
-		// 			mask,
-		// 			animationDuration,
-		// 			maskProps: {
-		// 				key: `popup-mask-${popupId}`,
-		// 				zIndex,
-		// 				maskClickClose,
-		// 				animations: maskAnimations,
-		// 				animationDuration
-		// 			},
-		// 			viewProps: {
-		// 				key: `popup-view-${popupId}`,
-		// 				popupId,
-		// 				zIndex,
-		// 				component,
-		// 				componentProps,
-		// 				animations: viewAnimations,
-		// 				animationDuration,
-		// 				width,
-		// 				maxWidth,
-		// 				minWidth,
-		// 				height,
-		// 				maxHeight,
-		// 				minHeight
-		// 			}
-		// 		}
-		// 	})
-		// )
 
 		popup.instance = instance
 
