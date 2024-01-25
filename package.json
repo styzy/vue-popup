@@ -1,6 +1,6 @@
 {
 	"name": "@styzy/vue-popup",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"description": "A Popup Plugins For Vue.js",
 	"keywords": [
 		"vue",
@@ -20,16 +20,17 @@
 		"type": "git",
 		"url": "git@github.com:styzy/vue-popup.git"
 	},
-	"main1": "src/index.js",
 	"main": "lib/vue-popup.common.js",
 	"private": false,
 	"license": "MIT",
 	"scripts": {
+		"dev": "vue-cli-service serve --open",
 		"lib": "vue-cli-service build --target lib --name vue-popup --dest lib src/index.js"
 	},
 	"dependencies": {
 		"core-js": "^3.6.5",
-		"vue": "^2.6.11"
+		"vue": "^2.6.11",
+		"vue-router": "^3.2.0"
 	},
 	"devDependencies": {
 		"@prettier/plugin-pug": "^1.19.2",

@@ -1,16 +1,16 @@
 import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
+import PACKAGE_JSON from '../package.json'
 
-const version = '1.0.1',
-	plugins = {}
+const plugins = {}
 
 let Vue = null,
 	rootVm = null
 
 class Popup {
 	static get version() {
-		return version
+		return PACKAGE_JSON.version
 	}
 	static get plugins() {
 		return plugins
@@ -21,7 +21,7 @@ class Popup {
 	static _usePlugin(name, install) {
 		this.plugins[name] = install
 
-		install(this)
+		install(this, Vue)
 	}
 	static install(_Vue) {
 		Vue = _Vue
@@ -35,6 +35,12 @@ class Popup {
 	}
 	static use(plugin) {
 		if (!plugin) return
+
+		if (!Vue)
+			throw new Error(
+				'Popup should be installed by Vue before install plugins'
+			)
+
 		const { name, install = () => {} } = plugin
 
 		if (this.plugins[name])
@@ -61,6 +67,11 @@ class Popup {
 		return this._PopupConstructor
 	}
 	constructor({ zIndex = 1000, parentVm } = {}) {
+		if (!Vue)
+			throw new Error(
+				'Popup should be installed by Vue before new Popup()'
+			)
+
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}

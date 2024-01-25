@@ -4,9 +4,9 @@
 		"module": "CommonJS",
 		"baseUrl": "./",
 		"paths": {
-			"@/*": ["/examples/*"],
-			"~/*": ["/src/*"],
-			"#/*": ["/src/utils/*"]
+			"@/*": ["src/*"],
+			"#": ["src/utils"],
+			"@ex/*": ["examples/*"]
 		}
 	},
 	"exclude": ["node_modules", "dist", "lib"]

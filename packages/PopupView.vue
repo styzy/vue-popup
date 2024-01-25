@@ -6,16 +6,17 @@ transition
 		v-if="isShow && !isLeave"
 	)
 		component(
-			:is="componentConfig"
+			:is="component"
 			:key="`popup-view-component-${popupId}`"
+			@close="handleComponentClose"
+			@hook:mounted="handleComponentMounted"
+			@resize="handleComponentResize"
+			ref="component"
 			v-bind="componentProps"
 		)
-		//- div(ref="component")
 </template>
 <script>
-import Vue from 'vue'
 import { ANIMATION_TYPES } from '../src/CONSTANTS'
-import { deepClone } from '../src/utils'
 
 export default {
 	name: 'PopupView',
@@ -38,7 +39,7 @@ export default {
 			type: Number
 		},
 		component: {
-			type: [Object, Function]
+			default: null
 		},
 		componentProps: {
 			default: () => {
@@ -69,7 +70,6 @@ export default {
 			isShow: false,
 			contentWidth: 0,
 			contentHeight: 0,
-			componentConfig: null,
 			instance: null
 		}
 	},
@@ -90,13 +90,13 @@ export default {
 			return {
 				zIndex: this.zIndex,
 				animationDuration: `${this.animationDuration / 1000}s`,
-				width: this.sizeFormat(this.width) || `${this.contentWidth}px`,
-				maxWidth: this.sizeFormat(this.maxWidth) || 'auto',
-				minWidth: this.sizeFormat(this.minWidth) || 'auto',
+				width: this.formatSize(this.width) || `${this.contentWidth}px`,
+				maxWidth: this.formatSize(this.maxWidth) || 'auto',
+				minWidth: this.formatSize(this.minWidth) || 'auto',
 				height:
-					this.sizeFormat(this.height) || `${this.contentHeight}px`,
-				maxHeight: this.sizeFormat(this.maxHeight) || 'auto',
-				minHeight: this.sizeFormat(this.minHeight) || 'auto'
+					this.formatSize(this.height) || `${this.contentHeight}px`,
+				maxHeight: this.formatSize(this.maxHeight) || 'auto',
+				minHeight: this.formatSize(this.minHeight) || 'auto'
 			}
 		}
 	},
@@ -104,82 +104,20 @@ export default {
 		window.setTimeout(() => {
 			this.isShow = true
 		}, 0)
-
-		this.renderComponent()
 	},
 	methods: {
-		async renderComponent1() {
-			const that = this
-
-			let config = this.component
-			if (typeof config === 'function') {
-				config = (await config()).default
-			}
-
-			config = deepClone(config)
-
-			config.mixins = config.mixins || []
-
-			config.mixins.push({
-				beforeCreate() {
-					that.instance = this
-
-					this.$on('close', (...args) => {
-						that.$emit('close', ...args)
-					})
-
-					this.$on('resize', () => {
-						that.sizeFix()
-					})
-				},
-				async mounted() {
-					await this.$nextTick()
-					this.$emit('resize')
-				}
-			})
-
-			this.instance = new Vue(
-				Object.assign({}, config, {
-					parent: this,
-					propsData: Object.assign({}, this.componentProps, {
-						key: `popup-view-component-${this.popupId}`
-					})
-				})
-			).$mount(this.$refs.component)
+		async handleComponentMounted() {
+			this.instance = this.$refs.component
+			await this.instance.$nextTick()
+			this.fixSize()
 		},
-		async renderComponent() {
-			const that = this
-
-			let config = this.component
-			if (typeof config === 'function') {
-				config = (await config()).default
-			}
-
-			config = deepClone(config)
-
-			config.mixins = config.mixins || []
-
-			config.mixins.push({
-				beforeCreate() {
-					that.instance = this
-
-					this.$on('close', (...args) => {
-						that.$emit('close', ...args)
-					})
-
-					this.$on('resize', () => {
-						that.sizeFix()
-					})
-				},
-				async mounted() {
-					await this.$nextTick()
-					this.$emit('resize')
-				}
-			})
-
-			this.componentConfig = config
+		handleComponentClose(...args) {
+			this.$emit('close', ...args)
 		},
-		async sizeFix() {
+		handleComponentResize() {
+			this.fixSize()
+		},
+		async fixSize() {
 			await this.$nextTick()
 
 			const { width, height } = this.getComponentSize()
@@ -212,7 +150,7 @@ export default {
 				height
 			}
 		},
-		sizeFormat(size) {
+		formatSize(size) {
 			if (typeof size === 'string') {
 				if (size === 'auto') return false
 				return size
