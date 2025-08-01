@@ -50,4 +50,4 @@ close()
 
 ## 文档
 
-所有的使用教程和 API 可以通过 [官方文档](https://github.com/styzy/vue-popup/blob/master/doc/index.html) 进行查看
+所有的使用教程和 API 可以通过 [官方文档](http://vue-popup.styzy.cn/#/) 进行查看
