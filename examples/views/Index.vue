@@ -50,13 +50,13 @@
 	.title.sub options.componentProps : Object
 	.des 用于给组件传入 props ，默认为 {}
 	.title.sub options.width : String
-	.des 用于设置弹出层宽度，默认为 auto
+	.des 用于设置弹出层宽度，如果不设置，将自动根据内部元素宽度自适应，默认为 auto
 	.title.sub options.minWidth : String
 	.des 用于设置弹出层最小宽度，默认为 auto
 	.title.sub options.maxWidth : String
 	.des 用于设置弹出层最大宽度，默认为 auto
 	.title.sub options.height : String
-	.des 用于设置弹出层高度，默认为 auto
+	.des 用于设置弹出层高度，如果不设置，将自动根据内部元素高度自适应，默认为 auto
 	.title.sub options.minHeight : String
 	.des 用于设置弹出层最小高度，默认为 auto
 	.title.sub options.maxHeight : String

@@ -22,45 +22,32 @@ yarn add @styzy/vue-popup
 
 ## 使用
 
-### 引入
-
-在 vue 实例化 `main.js` 中使用它
+### 初始化
 
 ```javascript
 import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
 import Popup from '@styzy/vue-popup'
-
-Vue.config.productionTip = false
 
 Vue.use(Popup)
 
-Vue.prototype.$popup = new Popup()
-
-new Vue({
-    router,
-    store,
-    render: h => h(App)
-}).$mount('#app')
+const popup = new Popup({
+    // 默认值：1000
+    zIndex: 5000,
+})
 ```
 
 ### 调用
 
 ```javascript
-// 组件内
-this.$popup.open(options)
-```
+// 打开弹出层
+const close = popup.render({
+    component: () => import('path/Test.vue')
+})
 
-> 具体的 `options` 配置请参考API文档。
+// 关闭弹出层
+close()
+```
 
 ## 文档
 
-开发中。。。
-<!-- 所有的使用教程和 API 可以通过 [官方文档](http://vue-popup.styzy.cn) 进行查看 -->
-
-## 示例
-
-开发中。。。
-<!-- 所有的示例已经集成在了 [官方文档](http://vue-popup.styzy.cn) 中。 -->
+所有的使用教程和 API 可以通过 [官方文档](http://vue-popup.styzy.cn/doc) 进行查看
