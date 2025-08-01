@@ -11,7 +11,6 @@
 				:key="`popup-view-component-${popupId}`"
 				@close="handleComponentClose"
 				@hook:mounted="handleComponentMounted"
-				@r1esize="handleComponentResize"
 				ref="component"
 				v-bind="componentProps"
 			)
@@ -107,47 +106,9 @@ export default {
 	methods: {
 		async handleComponentMounted() {
 			this.instance = this.$refs.component
-			// await this.instance.$nextTick()
-			// this.fixSize()
 		},
 		handleComponentClose(...args) {
 			this.$emit('close', ...args)
-		},
-		// handleComponentResize() {
-		// 	this.fixSize()
-		// },
-		async fixSize() {
-			await this.$nextTick()
-
-			const { width, height } = this.getComponentSize()
-			if (typeof this.width !== 'number') {
-				this.contentWidth = width
-			}
-			if (typeof this.height !== 'number') {
-				this.contentHeight = height
-			}
-		},
-		getComponentSize() {
-			const el = this.instance.$el,
-				styles = window.getComputedStyle(el),
-				isBorderBox = styles['boxSizing'] === 'border-box'
-
-			let width = parseFloat(styles['width']),
-				height = parseFloat(styles['height'])
-
-			if (!isBorderBox) {
-				width +=
-					parseFloat(styles['paddingLeft']) +
-					parseFloat(styles['paddingRight'])
-				height +=
-					parseFloat(styles['paddingTop']) +
-					parseFloat(styles['paddingBottom'])
-			}
-
-			return {
-				width,
-				height
-			}
 		},
 		formatSize(size) {
 			if (typeof size === 'string') {

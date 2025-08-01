@@ -1,10 +1,9 @@
 <template lang="pug">
 .demo(:style="{ width: width, height: height }")
-	h1 这是一个demo
+	h1 这是一个弹框
 	br
-	button(@click="$emit('close')") close
+	button(@click="$emit('close')") 关闭弹框
 	br
-	button(@click="$emit('resize')") resize
 	button(@click="handlerResize") 修改大小
 </template>
 
@@ -27,6 +26,9 @@ export default {
 
 <style lang="stylus" scoped>
 .demo
+	display flex
+	flex-direction column
+	align-items center
 	overflow hidden
 	width 300px
 	height 300px
