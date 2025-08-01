@@ -25,7 +25,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "vue-cli-service serve --open",
-		"build": "vue-cli-service build --dest doc",
+		"build": "vue-cli-service build",
 		"lib": "vue-cli-service build --target lib --name vue-popup --dest lib src/index.js"
 	},
 	"dependencies": {
