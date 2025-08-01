@@ -20,12 +20,6 @@ module.exports = {
 			.use('babel')
 			.loader('babel-loader')
 	},
-	devServer: {
-		overlay: {
-			warning: false,
-			errors: false
-		}
-	},
 	runtimeCompiler: true,
 	configureWebpack: {
 		output: {

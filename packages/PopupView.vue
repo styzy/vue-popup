@@ -1,19 +1,20 @@
 <template lang="pug">
-transition
-	.popup-view(
-		:class="classObject"
-		:style="styleObject"
-		v-if="isShow && !isLeave"
-	)
-		component(
-			:is="component"
-			:key="`popup-view-component-${popupId}`"
-			@close="handleComponentClose"
-			@hook:mounted="handleComponentMounted"
-			@resize="handleComponentResize"
-			ref="component"
-			v-bind="componentProps"
+.popup-view-wrapper(:style="{ zIndex: zIndex }")
+	transition
+		.popup-view(
+			:class="classObject"
+			:style="styleObject"
+			v-if="isShow && !isLeave"
 		)
+			component(
+				:is="component"
+				:key="`popup-view-component-${popupId}`"
+				@close="handleComponentClose"
+				@hook:mounted="handleComponentMounted"
+				@r1esize="handleComponentResize"
+				ref="component"
+				v-bind="componentProps"
+			)
 </template>
 <script>
 import { ANIMATION_TYPES } from '../src/CONSTANTS'
@@ -88,13 +89,11 @@ export default {
 		},
 		styleObject() {
 			return {
-				zIndex: this.zIndex,
 				animationDuration: `${this.animationDuration / 1000}s`,
-				width: this.formatSize(this.width) || `${this.contentWidth}px`,
+				width: this.formatSize(this.width) || 'auto',
 				maxWidth: this.formatSize(this.maxWidth) || 'auto',
 				minWidth: this.formatSize(this.minWidth) || 'auto',
-				height:
-					this.formatSize(this.height) || `${this.contentHeight}px`,
+				height: this.formatSize(this.height) || 'auto',
 				maxHeight: this.formatSize(this.maxHeight) || 'auto',
 				minHeight: this.formatSize(this.minHeight) || 'auto'
 			}
@@ -108,15 +107,15 @@ export default {
 	methods: {
 		async handleComponentMounted() {
 			this.instance = this.$refs.component
-			await this.instance.$nextTick()
-			this.fixSize()
+			// await this.instance.$nextTick()
+			// this.fixSize()
 		},
 		handleComponentClose(...args) {
 			this.$emit('close', ...args)
 		},
-		handleComponentResize() {
-			this.fixSize()
-		},
+		// handleComponentResize() {
+		// 	this.fixSize()
+		// },
 		async fixSize() {
 			await this.$nextTick()
 
@@ -167,16 +166,21 @@ export default {
 <style lang="stylus" scoped>
 @import './animation.styl'
 
-.popup-view
-	useAnimation()
-
+.popup-view-wrapper
 	position fixed
 	top 0
 	right 0
 	bottom 0
 	left 0
-	margin auto
-	animation-timing-function linear
-	&>*
-		display inline-block
+	display flex
+	justify-content center
+	align-items center
+	pointer-events none
+	.popup-view
+		useAnimation()
+
+		position relative
+		margin auto
+		animation-timing-function linear
+		pointer-events auto
 </style>

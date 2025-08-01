@@ -5,6 +5,7 @@
 
 <script>
 import Popup from '@'
+import { popup } from '@ex/popup'
 
 export default {
 	name: 'Index',
@@ -14,7 +15,7 @@ export default {
 		}
 	},
 	async mounted() {
-		this.$popup.render({
+		popup.render({
 			mark: false,
 			component: () => import('@ex/views/Demo.vue')
 		})
