@@ -9,5 +9,3 @@ Vue.use(Popup)
 export const popup = new Popup({
 	zIndex: 9000
 })
-
-popup.$test()
