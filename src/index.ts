@@ -1,4 +1,4 @@
-import type { default as VueInstance } from 'vue'
+import type { AsyncComponent, default as VueInstance } from 'vue'
 import type { Component, PluginFunction, VueConstructor } from 'vue'
 import Vue from 'vue'
 import PopupComponent from '../packages/Popup.vue'
@@ -61,6 +61,11 @@ type PopupOptions = {
 	zIndex?: number
 }
 
+type PopupRenderComponent =
+	| {}
+	| Component<any, any, any, any>
+	| AsyncComponent<any, any, any, any>
+
 type PopupRenderOptions = {
 	/**
 	 * 是否显示遮罩层
@@ -88,7 +93,7 @@ type PopupRenderOptions = {
 	 * })
 	 * ```
 	 */
-	component: Component
+	component: PopupRenderComponent
 	/**
 	 * 弹窗组件的 props
 	 * - 可以传递任意 props 给弹窗组件

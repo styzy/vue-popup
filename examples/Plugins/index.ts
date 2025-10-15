@@ -11,9 +11,15 @@ export default definePlugin({
 		Popup.prototype.$test = function (message: string) {
 			// console.log('this: ', this)
 			this.render({
-				component: Vue.extend({
-					template: `<div>${message}</div>`
-				})
+				component: () => import('../views/Demo.vue')
+				// component: Vue.extend({
+				// 	data() {
+				// 		return {
+				// 			message
+				// 		}
+				// 	},
+				// 	template: `<div>${message}</div>`
+				// })
 			})
 		}
 	}
