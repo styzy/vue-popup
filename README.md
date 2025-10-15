@@ -1,3 +1,5 @@
+## 请注意：目前最新版本为 `2.3.0` ，这也是适配 `Vue2.x` 的最后一个版本，因为 `Vue3.x` 已经发布，后续该插件将不再维护，如需 `Vue3.x` 版本的插件，请查看 [vue-popup-plus](https://github.com/styzy/vue-popup-plus) 。
+
 # vue-popup
 
 > 一款支持 Vue.js 2.x 版本的标签页路由框架
