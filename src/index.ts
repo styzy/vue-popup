@@ -161,6 +161,7 @@ type PopupInstance = {
 	instance?: InstanceType<VueConstructor>
 }
 
+// eslint-disable-next-line
 export interface PopupCustomProperties {}
 
 type PopupPrototypeFunctionValue = (this: IPopup, ...args: any[]) => any
