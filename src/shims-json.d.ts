@@ -1,5 +1,5 @@
 declare module '*.json' {
-	type Json = Record<string, any>
-	export default Json
+	const json: Record<string, any>
+	export default json
 }
 
