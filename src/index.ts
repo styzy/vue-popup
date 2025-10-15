@@ -1,22 +1,25 @@
+import type Vue from 'vue'
+import type { Component, PluginFunction, VueConstructor } from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 import PACKAGE_JSON from '../package.json'
-import type Vue from 'vue'
-import type { Component, PluginFunction, VueConstructor } from 'vue'
 
 type VuePopupInstall = (_Popup: typeof Popup, Vue: VueConstructor) => void
 
-export type VuePopupPlugin = {
+type VuePopupPlugin = {
 	name: string
 	install: VuePopupInstall
 }
 
-export type VuePopupOptions = {
+type VuePopupOptions = {
 	zIndex?: number
 }
 
-export type VuePopupRenderOptions = {
+type VuePopupRenderOptions = {
+	/**
+	 * 是否显示遮罩层
+	 */
 	mask?: boolean
 	maskClickClose?: boolean
 	component: Component
@@ -35,7 +38,7 @@ export type VuePopupRenderOptions = {
 	zIndex?: number
 }
 
-export declare class VuePopup {
+declare class VuePopup {
 	static get version(): string
 	static get plugins(): Array<VuePopupPlugin>
 	static install: PluginFunction<void>

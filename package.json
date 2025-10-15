@@ -27,7 +27,8 @@
 	"scripts": {
 		"dev": "vue-cli-service serve --open",
 		"build": "vue-cli-service build",
-		"lib": "vue-cli-service build --target lib --name vue-popup --dest lib src/index.ts"
+		"build:lib": "vue-cli-service build --target lib --name vue-popup --dest lib src/index.ts",
+		"build:types": "rimraf types && tsc"
 	},
 	"dependencies": {
 		"core-js": "^3.6.5",

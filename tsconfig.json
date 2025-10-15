@@ -19,16 +19,13 @@
 			"#": ["src/utils"],
 			"@ex/*": ["examples/*"]
 		},
-		"lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+		"lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": true,
+		"outDir": "types"
 	},
-	"include": [
-		"types/**/*.d.ts",
-		"src/**/*.ts",
-		"src/**/*.tsx",
-		"src/**/*.vue",
-		"tests/**/*.ts",
-		"tests/**/*.tsx"
-	],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
 	"exclude": ["node_modules"]
 }
 
