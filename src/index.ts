@@ -206,7 +206,7 @@ type VuePopup = {
 	 * - 通过 `new` 关键字创建实例，每个实例都是独立的弹窗管理器
 	 * - 通过调用 `render` 方法渲染弹窗
 	 */
-	new (options: PopupManagerOptions): IPopupManager
+	new (options?: PopupManagerOptions): IPopupManager
 }
 
 interface IPopupManager extends PopupCustomProperties {
