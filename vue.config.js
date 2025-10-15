@@ -4,7 +4,7 @@ module.exports = {
 	publicPath: './',
 	pages: {
 		index: {
-			entry: 'examples/main.js',
+			entry: 'examples/main',
 			template: 'public/index.html',
 			filename: 'index.html'
 		}

@@ -3,11 +3,11 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-let routes = [
+const routes = [
 	{
 		path: '/',
 		name: 'Index',
-		component: () => import('@ex/views/Index')
+		component: () => import('@ex/views/Index.vue')
 	}
 ]
 

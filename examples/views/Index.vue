@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import Popup from '@'
+import Popup from '@/index'
 import { popup } from '@ex/popup'
 
 export default {
