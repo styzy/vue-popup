@@ -62,7 +62,7 @@ type PopupOptions = {
 }
 
 type PopupRenderComponent =
-	| {}
+	| object
 	| Component<any, any, any, any>
 	| AsyncComponent<any, any, any, any>
 
