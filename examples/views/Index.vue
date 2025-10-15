@@ -2,7 +2,7 @@
 .index
 	.notice
 		.warn 请注意：目前最新版本为
-			b 2.3.0
+			b {{ Popup.version }}
 			| ，这也是适配
 			b vue2
 			| 的最后一个版本，因为
