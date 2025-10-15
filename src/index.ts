@@ -201,6 +201,24 @@ type Popup = {
 	new (options?: PopupOptions): IPopup
 }
 
+interface IPopup extends PopupCustomProperties {
+	/**
+	 * 渲染弹窗
+	 * @param options 弹窗渲染选项
+	 * @returns 关闭弹窗的函数
+	 * - 调用该函数可以关闭弹窗
+	 * - 使用示例：
+	 * ```
+	 * const close = popup.render({
+	 * 	component: MyComponent
+	 * })
+	 * // 关闭弹窗
+	 * close()
+	 * ```
+	 */
+	render(options: PopupRenderOptions): () => void
+}
+
 type PopupInPlugin = Popup & {
 	/**
 	 * 原型属性
@@ -222,24 +240,6 @@ type PopupInPlugin = Popup & {
 	 * ```
 	 */
 	readonly prototype: PopupPrototype
-}
-
-interface IPopup extends PopupCustomProperties {
-	/**
-	 * 渲染弹窗
-	 * @param options 弹窗渲染选项
-	 * @returns 关闭弹窗的函数
-	 * - 调用该函数可以关闭弹窗
-	 * - 使用示例：
-	 * ```
-	 * const close = popup.render({
-	 * 	component: MyComponent
-	 * })
-	 * // 关闭弹窗
-	 * close()
-	 * ```
-	 */
-	render(options: PopupRenderOptions): () => void
 }
 
 let rootVm: VueInstance
@@ -266,7 +266,7 @@ class _Popup implements IPopup {
 
 		this.plugins[plugin.name] = plugin
 
-		plugin.install(_Popup as unknown as PopupInPlugin, Vue)
+		plugin.install(VuePopup, Vue)
 	}
 	static plugins: Record<string, PopupPlugin> = {}
 	private _seed = 0
