@@ -2,7 +2,7 @@
 
 # vue-popup
 
-> 一款支持 Vue.js 2.x 版本的标签页路由框架
+> 一款支持 Vue.js 2.x 版本的弹出层路由框架
 
 `vue-popup` 是一款适用于 `vue2` 的弹出层插件。
 
