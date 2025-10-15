@@ -1,5 +1,6 @@
-import type Vue from 'vue'
+import type { default as VueInstance } from 'vue'
 import type { Component, PluginFunction, VueConstructor } from 'vue'
+import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
@@ -13,12 +14,35 @@ type PopupPlugin = {
 	/**
 	 * 插件安装函数
 	 * - 提供两个参数
-	 *   - 第一个参数为 Popup 类
+	 *   - 第一个参数为 Popup 类，可通过对 `prototype` 原型属性添加方法或属性
 	 *   - 第二个参数为 Vue 构造函数
 	 */
 	install: PopupManagerInstall
 }
 
+/**
+ * 定义一个VuePopup插件
+ * - 插件必须在 `Vue.use(VuePopup)` 之前安装，否则 `install` 方法内无法获取
+ * - 可使用 `usePlugin` 方法安装插件
+ * - 使用示例：
+ * ```
+ * import VuePopup, { definePlugin } from '@styzy/vue-popup'
+ *
+ * const plugin = definePlugin({
+ * 	name: 'test',
+ * 	install(Popup, Vue) {
+ * 		Popup.prototype.test = function (){
+ * 			this.render({
+ * 				// 自定义参数
+ * 			})
+ * 		}
+ * 	}
+ * })
+ *
+ * // 安装插件
+ * VuePopup.usePlugin(plugin)
+ * ```
+ */
 export function definePlugin<TPlugin extends PopupPlugin>(
 	plugin: TPlugin
 ): TPlugin {
@@ -118,7 +142,7 @@ type PopupRenderOptions = {
 	/**
 	 * 弹窗挂载完成后的回调函数
 	 */
-	mounted?: (instance: Vue) => void
+	mounted?: (instance: VueInstance) => void
 	/**
 	 * 弹窗销毁后的回调函数
 	 */
@@ -135,6 +159,10 @@ type PopupInstance = {
 	instance?: InstanceType<VueConstructor>
 }
 
+export interface PopupCustomProperties {
+	[key: string]: any
+}
+
 type VuePopup = {
 	/**
 	 * 版本号
@@ -149,6 +177,8 @@ type VuePopup = {
 	 * @param plugin 插件对象
 	 */
 	readonly usePlugin: (plugin: PopupPlugin) => void
+	readonly prototype: PopupCustomProperties
+	new (options: PopupManagerOptions): IPopupManager
 }
 
 interface IPopupManager extends PopupCustomProperties {
@@ -169,10 +199,7 @@ interface IPopupManager extends PopupCustomProperties {
 	render(options: PopupRenderOptions): () => void
 }
 
-// eslint-disable-next-line
-interface PopupCustomProperties {}
-
-let _Vue: VueConstructor, rootVm: Vue
+let rootVm: VueInstance
 class PopupManager implements IPopupManager {
 	static get version() {
 		return PACKAGE_JSON.version
@@ -180,15 +207,8 @@ class PopupManager implements IPopupManager {
 	static get ANIMATION_TYPES() {
 		return deepClone(ANIMATION_TYPES)
 	}
-	static _usePlugin({ name, install }: PopupPlugin) {
-		this.plugins[name] = install
-
-		install(PopupManager, _Vue)
-	}
 	static install(Vue: VueConstructor) {
-		_Vue = Vue
-
-		_Vue.mixin({
+		Vue.mixin({
 			created() {
 				if (rootVm) return
 				rootVm = (this as any).$root
@@ -198,20 +218,17 @@ class PopupManager implements IPopupManager {
 	static usePlugin(plugin: PopupPlugin) {
 		if (!plugin) return
 
-		if (!_Vue)
-			throw new Error(
-				'Popup should be installed by Vue before install plugins'
-			)
-
 		if (this.plugins[plugin.name])
 			throw new Error(`Popup: exist plugin name: ${plugin.name}`)
 
 		if (typeOf(plugin.install) !== 'Function')
 			throw new Error(`Popup: plugin's prop install must be a function`)
 
-		this._usePlugin(plugin)
+		this.plugins[plugin.name] = plugin
+
+		plugin.install(PopupManager, Vue)
 	}
-	static plugins: Record<string, PopupManagerInstall> = {}
+	static plugins: Record<string, PopupPlugin> = {}
 	private _seed = 0
 	private _zIndex: number
 	private _popups: Record<string, PopupInstance> = {}
@@ -225,11 +242,6 @@ class PopupManager implements IPopupManager {
 		return this._popups
 	}
 	constructor({ zIndex = 1000 } = {} as PopupManagerOptions) {
-		if (!_Vue)
-			throw new Error(
-				'Popup should be installed by Vue before new Popup()'
-			)
-
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}
@@ -263,7 +275,7 @@ class PopupManager implements IPopupManager {
 		} = {} as PopupRenderOptions
 	) {
 		const el = document.body.appendChild(document.createElement('div'))
-		const Constructor = _Vue.extend(Object.assign({}, _Popup, { rootVm }))
+		const Constructor = Vue.extend(Object.assign({}, _Popup, { rootVm }))
 		const instance = new Constructor({
 			propsData: {
 				mask,
