@@ -163,6 +163,8 @@ export interface PopupCustomProperties {
 	[key: string]: any
 }
 
+type PopupPrototype = Record<string, any>
+
 type VuePopup = {
 	/**
 	 * 版本号
@@ -177,7 +179,31 @@ type VuePopup = {
 	 * @param plugin 插件对象
 	 */
 	readonly usePlugin: (plugin: PopupPlugin) => void
-	readonly prototype: PopupCustomProperties
+	/**
+	 * 原型属性
+	 * - 可在插件的 `install` 方法中扩展方法或属性
+	 * - 该属性为只读属性，不能直接修改，只允许扩展
+	 * - 使用示例：
+	 * ```
+	 * // 插件中扩展方法
+	 * Popup.prototype.$test = function (message: string) {
+	 * 	this.render({
+	 * 		component: Vue.extend({
+	 * 			template: `<div>${message}</div>`
+	 * 		})
+	 * 	})
+	 * }
+	 *
+	 * // 调用
+	 * popup.$test('hello world')
+	 * ```
+	 */
+	readonly prototype: PopupPrototype
+	/**
+	 * 创建弹窗管理器实例
+	 * - 通过 `new` 关键字创建实例，每个实例都是独立的弹窗管理器
+	 * - 通过调用 `render` 方法渲染弹窗
+	 */
 	new (options: PopupManagerOptions): IPopupManager
 }
 
