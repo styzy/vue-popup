@@ -5,7 +5,7 @@ import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
 import { typeOf, deepClone } from './utils'
 import PACKAGE_JSON from '../package.json'
 
-type VuePopupPlugin = {
+type PopupPlugin = {
 	/**
 	 * 插件名称
 	 */
@@ -16,18 +16,18 @@ type VuePopupPlugin = {
 	 *   - 第一个参数为 Popup 类
 	 *   - 第二个参数为 Vue 构造函数
 	 */
-	install: VuePopupInstall
+	install: PopupManagerInstall
 }
 
-export function definePlugin<TPlugin extends VuePopupPlugin>(
+export function definePlugin<TPlugin extends PopupPlugin>(
 	plugin: TPlugin
 ): TPlugin {
 	return plugin
 }
 
-type VuePopupInstall = (_Popup: typeof Popup, Vue: VueConstructor) => void
+type PopupManagerInstall = (Popup: VuePopup, Vue: VueConstructor) => void
 
-type VuePopupOptions = {
+type PopupManagerOptions = {
 	/**
 	 * 全局的 z-index 层级，默认值为 1000
 	 * - 每个弹框渲染都会自动递增这个值
@@ -35,7 +35,7 @@ type VuePopupOptions = {
 	zIndex?: number
 }
 
-type VuePopupRenderOptions = {
+type PopupRenderOptions = {
 	/**
 	 * 是否显示遮罩层
 	 */
@@ -130,21 +130,28 @@ type VuePopupRenderOptions = {
 	zIndex?: number
 }
 
-declare class VuePopup {
+type PopupInstance = {
+	id: string
+	instance?: InstanceType<VueConstructor>
+}
+
+type VuePopup = {
 	/**
 	 * 版本号
 	 */
-	static get version(): string
+	readonly version: string
 	/**
 	 * 安装函数，提供给 Vue.use() 安装插件
 	 */
-	static install: PluginFunction<void>
+	readonly install: PluginFunction<void>
 	/**
 	 * 安装插件
 	 * @param plugin 插件对象
 	 */
-	static usePlugin(plugin: VuePopupPlugin): void
-	constructor(options?: VuePopupOptions)
+	readonly usePlugin: (plugin: PopupPlugin) => void
+}
+
+interface IPopupManager extends PopupCustomProperties {
 	/**
 	 * 渲染弹窗
 	 * @param options 弹窗渲染选项
@@ -159,27 +166,24 @@ declare class VuePopup {
 	 * close()
 	 * ```
 	 */
-	render(options: VuePopupRenderOptions): () => void
+	render(options: PopupRenderOptions): () => void
 }
 
-type PopupInstance = {
-	id: string
-	instance?: InstanceType<VueConstructor>
-}
+// eslint-disable-next-line
+interface PopupCustomProperties {}
 
 let _Vue: VueConstructor, rootVm: Vue
-
-export default class Popup implements VuePopup {
+class PopupManager implements IPopupManager {
 	static get version() {
 		return PACKAGE_JSON.version
 	}
 	static get ANIMATION_TYPES() {
 		return deepClone(ANIMATION_TYPES)
 	}
-	static _usePlugin({ name, install }: VuePopupPlugin) {
+	static _usePlugin({ name, install }: PopupPlugin) {
 		this.plugins[name] = install
 
-		install(Popup, _Vue)
+		install(PopupManager, _Vue)
 	}
 	static install(Vue: VueConstructor) {
 		_Vue = Vue
@@ -191,7 +195,7 @@ export default class Popup implements VuePopup {
 			}
 		})
 	}
-	static usePlugin(plugin: VuePopupPlugin) {
+	static usePlugin(plugin: PopupPlugin) {
 		if (!plugin) return
 
 		if (!_Vue)
@@ -207,7 +211,7 @@ export default class Popup implements VuePopup {
 
 		this._usePlugin(plugin)
 	}
-	static plugins: Record<string, VuePopupInstall> = {}
+	static plugins: Record<string, PopupManagerInstall> = {}
 	private _seed = 0
 	private _zIndex: number
 	private _popups: Record<string, PopupInstance> = {}
@@ -220,7 +224,7 @@ export default class Popup implements VuePopup {
 	get popups() {
 		return this._popups
 	}
-	constructor({ zIndex = 1000 } = {} as VuePopupOptions) {
+	constructor({ zIndex = 1000 } = {} as PopupManagerOptions) {
 		if (!_Vue)
 			throw new Error(
 				'Popup should be installed by Vue before new Popup()'
@@ -256,7 +260,7 @@ export default class Popup implements VuePopup {
 			minHeight = 'auto',
 			mounted,
 			destroyed
-		} = {} as VuePopupRenderOptions
+		} = {} as PopupRenderOptions
 	) {
 		const el = document.body.appendChild(document.createElement('div'))
 		const Constructor = _Vue.extend(Object.assign({}, _Popup, { rootVm }))
@@ -316,3 +320,7 @@ export default class Popup implements VuePopup {
 		}
 	}
 }
+
+const VuePopup: VuePopup = PopupManager
+
+export default VuePopup
