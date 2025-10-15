@@ -139,7 +139,12 @@ declare class VuePopup {
 	 * 安装函数，提供给 Vue.use() 安装插件
 	 */
 	static install: PluginFunction<void>
-	constructor(options: VuePopupOptions)
+	/**
+	 * 安装插件
+	 * @param plugin 插件对象
+	 */
+	static usePlugin(plugin: VuePopupPlugin): void
+	constructor(options?: VuePopupOptions)
 	/**
 	 * 渲染弹窗
 	 * @param options 弹窗渲染选项
@@ -186,7 +191,7 @@ export default class Popup implements VuePopup {
 			}
 		})
 	}
-	static use(plugin: VuePopupPlugin) {
+	static usePlugin(plugin: VuePopupPlugin) {
 		if (!plugin) return
 
 		if (!_Vue)
