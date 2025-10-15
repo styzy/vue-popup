@@ -1,4 +1,4 @@
-## 请注意：目前最新版本为 `2.5.1` ，这也是适配 `Vue2.x` 的最后一个版本，因为 `Vue3.x` 已经发布，后续该插件将不再维护，如需 `Vue3.x` 版本的插件，请查看 [vue-popup-plus](https://github.com/styzy/vue-popup-plus) 。
+## 请注意：目前最新版本为 `2.5.2` ，这也是适配 `Vue2.x` 的最后一个版本，因为 `Vue3.x` 已经发布，后续该插件将不再维护，如需 `Vue3.x` 版本的插件，请查看 [vue-popup-plus](https://github.com/styzy/vue-popup-plus) 。
 
 # vue-popup
 
