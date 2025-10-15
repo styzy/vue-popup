@@ -1,4 +1,4 @@
-export const enum AnimationType {
+export enum AnimationType {
 	/**
 	 * 淡入淡出动画
 	 */

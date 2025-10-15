@@ -3,8 +3,10 @@ import type { Component, PluginFunction, VueConstructor } from 'vue'
 import Vue from 'vue'
 import _Popup from '../packages/Popup.vue'
 import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
-import { typeOf, deepClone } from './utils'
+import { typeOf } from './utils'
 import PACKAGE_JSON from '../package.json'
+
+export { ANIMATION_TYPES, AnimationType }
 
 type PopupPlugin = {
 	/**
@@ -229,9 +231,6 @@ let rootVm: VueInstance
 class PopupManager implements IPopupManager {
 	static get version() {
 		return PACKAGE_JSON.version
-	}
-	static get ANIMATION_TYPES() {
-		return deepClone(ANIMATION_TYPES)
 	}
 	static install(Vue: VueConstructor) {
 		Vue.mixin({
