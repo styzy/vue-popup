@@ -184,7 +184,7 @@ type PopupPrototype = Record<
 	| PopupPrototypeFunctionValue
 >
 
-type Popup = {
+export type Popup = {
 	/**
 	 * 版本号
 	 */
@@ -206,7 +206,7 @@ type Popup = {
 	new (options?: PopupOptions): IPopup
 }
 
-interface IPopup extends PopupCustomProperties {
+export interface IPopup extends PopupCustomProperties {
 	/**
 	 * 渲染弹窗
 	 * @param options 弹窗渲染选项
