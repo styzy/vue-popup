@@ -8,6 +8,21 @@ import PACKAGE_JSON from '../package.json'
 
 export { ANIMATION_TYPES, AnimationType }
 
+// eslint-disable-next-line
+export interface PopupCustomProperties {}
+
+type PopupPrototypeFunctionValue = (this: IPopupManager, ...args: any[]) => any
+
+type PopupPrototypeAnyValue = Omit<any, 'function'> &
+	PopupPrototypeFunctionValue
+
+/**
+ * 插件安装函数的第一个参数，用于定义 Popup 类的原型属性
+ */
+type PopupDefineProperty = (key: string, value: PopupPrototypeAnyValue) => void
+
+type PopupPluginInstall = (defineProperty: PopupDefineProperty) => void
+
 type PopupPlugin = {
 	/**
 	 * 插件名称
@@ -15,11 +30,22 @@ type PopupPlugin = {
 	name: string
 	/**
 	 * 插件安装函数
-	 * - 提供两个参数
-	 *   - 第一个参数为 Popup 类，可通过对 `prototype` 原型属性添加方法或属性
-	 *   - 第二个参数为 Vue 构造函数
+	 * - 提供一个参数 `defineProperty`，用于定义 Popup 类的原型属性
+	 * - 使用示例：
+	 * ```
+	 * definePlugin({
+	 * 	name: 'test',
+	 * 	install(defineProperty) {
+	 * 		defineProperty('$test1', function () {
+	 * 			this.render({
+	 * 				// 自定义参数
+	 * 			})
+	 * 		})
+	 * 	}
+	 * })
+	 * ```
 	 */
-	install: PopupManagerInstall
+	install: PopupPluginInstall
 }
 
 /**
@@ -45,13 +71,9 @@ type PopupPlugin = {
  * VuePopup.usePlugin(plugin)
  * ```
  */
-export function definePlugin<TPlugin extends PopupPlugin>(
-	plugin: TPlugin
-): TPlugin {
+export function definePlugin(plugin: PopupPlugin): PopupPlugin {
 	return plugin
 }
-
-type PopupManagerInstall = (Popup: VuePopup, Vue: VueConstructor) => void
 
 type PopupManagerOptions = {
 	/**
@@ -161,12 +183,6 @@ type PopupInstance = {
 	instance?: InstanceType<VueConstructor>
 }
 
-export interface PopupCustomProperties {
-	[key: string]: any
-}
-
-type PopupPrototype = Record<string, any>
-
 type VuePopup = {
 	/**
 	 * 版本号
@@ -181,26 +197,6 @@ type VuePopup = {
 	 * @param plugin 插件对象
 	 */
 	readonly usePlugin: (plugin: PopupPlugin) => void
-	/**
-	 * 原型属性
-	 * - 可在插件的 `install` 方法中扩展方法或属性
-	 * - 该属性为只读属性，不能直接修改，只允许扩展
-	 * - 使用示例：
-	 * ```
-	 * // 插件中扩展方法
-	 * Popup.prototype.$test = function (message: string) {
-	 * 	this.render({
-	 * 		component: Vue.extend({
-	 * 			template: `<div>${message}</div>`
-	 * 		})
-	 * 	})
-	 * }
-	 *
-	 * // 调用
-	 * popup.$test('hello world')
-	 * ```
-	 */
-	readonly prototype: PopupPrototype
 	/**
 	 * 创建弹窗管理器实例
 	 * - 通过 `new` 关键字创建实例，每个实例都是独立的弹窗管理器
@@ -228,6 +224,10 @@ interface IPopupManager extends PopupCustomProperties {
 }
 
 let rootVm: VueInstance
+
+const defineProperty: PopupDefineProperty = (key, value) => {
+	;(PopupManager.prototype as any)[key] = value
+}
 class PopupManager implements IPopupManager {
 	static get version() {
 		return PACKAGE_JSON.version
@@ -251,7 +251,7 @@ class PopupManager implements IPopupManager {
 
 		this.plugins[plugin.name] = plugin
 
-		plugin.install(PopupManager, Vue)
+		plugin.install(defineProperty)
 	}
 	static plugins: Record<string, PopupPlugin> = {}
 	private _seed = 0
