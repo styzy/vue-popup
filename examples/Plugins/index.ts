@@ -1,15 +1,20 @@
-import Vue from 'vue'
 import { definePlugin } from '@/index'
 
 export default definePlugin({
 	name: 'Test',
-	install(defineProperty) {
-		defineProperty('$test1', function () {
+	install(Popup, Vue) {
+		// console.log('plugin install ')
+		// console.log('Popup: ', Popup)
+		// console.log('Vue: ', Vue)
+		Popup.prototype.render = 1
+		Popup.prototype.$test1 = []
+		Popup.prototype.$test = function (message: string) {
+			// console.log('this: ', this)
 			this.render({
 				component: Vue.extend({
-					template: `<div>test1</div>`
+					template: `<div>${message}</div>`
 				})
 			})
-		})
+		}
 	}
 })

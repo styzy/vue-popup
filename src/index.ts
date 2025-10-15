@@ -1,27 +1,12 @@
 import type { default as VueInstance } from 'vue'
 import type { Component, PluginFunction, VueConstructor } from 'vue'
 import Vue from 'vue'
-import _Popup from '../packages/Popup.vue'
+import PopupComponent from '../packages/Popup.vue'
 import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
 import { typeOf } from './utils'
 import PACKAGE_JSON from '../package.json'
 
 export { ANIMATION_TYPES, AnimationType }
-
-// eslint-disable-next-line
-export interface PopupCustomProperties {}
-
-type PopupPrototypeFunctionValue = (this: IPopupManager, ...args: any[]) => any
-
-type PopupPrototypeAnyValue = Omit<any, 'function'> &
-	PopupPrototypeFunctionValue
-
-/**
- * 插件安装函数的第一个参数，用于定义 Popup 类的原型属性
- */
-type PopupDefineProperty = (key: string, value: PopupPrototypeAnyValue) => void
-
-type PopupPluginInstall = (defineProperty: PopupDefineProperty) => void
 
 type PopupPlugin = {
 	/**
@@ -30,20 +15,9 @@ type PopupPlugin = {
 	name: string
 	/**
 	 * 插件安装函数
-	 * - 提供一个参数 `defineProperty`，用于定义 Popup 类的原型属性
-	 * - 使用示例：
-	 * ```
-	 * definePlugin({
-	 * 	name: 'test',
-	 * 	install(defineProperty) {
-	 * 		defineProperty('$test1', function () {
-	 * 			this.render({
-	 * 				// 自定义参数
-	 * 			})
-	 * 		})
-	 * 	}
-	 * })
-	 * ```
+	 * - 提供两个参数
+	 *   - 第一个参数为 Popup 类，可通过对 `prototype` 原型属性添加方法或属性
+	 *   - 第二个参数为 Vue 构造函数
 	 */
 	install: PopupPluginInstall
 }
@@ -71,11 +45,15 @@ type PopupPlugin = {
  * VuePopup.usePlugin(plugin)
  * ```
  */
-export function definePlugin(plugin: PopupPlugin): PopupPlugin {
+export function definePlugin<TPlugin extends PopupPlugin>(
+	plugin: TPlugin
+): TPlugin {
 	return plugin
 }
 
-type PopupManagerOptions = {
+type PopupPluginInstall = (Popup: PopupInPlugin, Vue: VueConstructor) => void
+
+type PopupOptions = {
 	/**
 	 * 全局的 z-index 层级，默认值为 1000
 	 * - 每个弹框渲染都会自动递增这个值
@@ -183,7 +161,24 @@ type PopupInstance = {
 	instance?: InstanceType<VueConstructor>
 }
 
-type VuePopup = {
+export interface PopupCustomProperties {}
+
+type PopupPrototypeFunctionValue = (this: IPopup, ...args: any[]) => any
+
+type PopupPrototype = Record<
+	string,
+	| string
+	| boolean
+	| number
+	| symbol
+	| object
+	| null
+	| undefined
+	| bigint
+	| PopupPrototypeFunctionValue
+>
+
+type Popup = {
 	/**
 	 * 版本号
 	 */
@@ -202,10 +197,33 @@ type VuePopup = {
 	 * - 通过 `new` 关键字创建实例，每个实例都是独立的弹窗管理器
 	 * - 通过调用 `render` 方法渲染弹窗
 	 */
-	new (options?: PopupManagerOptions): IPopupManager
+	new (options?: PopupOptions): IPopup
 }
 
-interface IPopupManager extends PopupCustomProperties {
+type PopupInPlugin = Popup & {
+	/**
+	 * 原型属性
+	 * - 可在插件的 `install` 方法中扩展方法或属性
+	 * - 该属性为只读属性，不能直接修改，只允许扩展
+	 * - 使用示例：
+	 * ```
+	 * // 插件中扩展方法
+	 * Popup.prototype.$test = function (message: string) {
+	 * 	this.render({
+	 * 		component: Vue.extend({
+	 * 			template: `<div>${message}</div>`
+	 * 		})
+	 * 	})
+	 * }
+	 *
+	 * // 调用
+	 * popup.$test('hello world')
+	 * ```
+	 */
+	readonly prototype: PopupPrototype
+}
+
+interface IPopup extends PopupCustomProperties {
 	/**
 	 * 渲染弹窗
 	 * @param options 弹窗渲染选项
@@ -224,11 +242,7 @@ interface IPopupManager extends PopupCustomProperties {
 }
 
 let rootVm: VueInstance
-
-const defineProperty: PopupDefineProperty = (key, value) => {
-	;(PopupManager.prototype as any)[key] = value
-}
-class PopupManager implements IPopupManager {
+class _Popup implements IPopup {
 	static get version() {
 		return PACKAGE_JSON.version
 	}
@@ -251,7 +265,7 @@ class PopupManager implements IPopupManager {
 
 		this.plugins[plugin.name] = plugin
 
-		plugin.install(defineProperty)
+		plugin.install(_Popup as unknown as PopupInPlugin, Vue)
 	}
 	static plugins: Record<string, PopupPlugin> = {}
 	private _seed = 0
@@ -266,7 +280,7 @@ class PopupManager implements IPopupManager {
 	get popups() {
 		return this._popups
 	}
-	constructor({ zIndex = 1000 } = {} as PopupManagerOptions) {
+	constructor({ zIndex = 1000 } = {} as PopupOptions) {
 		this._seed = 0
 		this._zIndex = zIndex
 		this._popups = {}
@@ -300,7 +314,9 @@ class PopupManager implements IPopupManager {
 		} = {} as PopupRenderOptions
 	) {
 		const el = document.body.appendChild(document.createElement('div'))
-		const Constructor = Vue.extend(Object.assign({}, _Popup, { rootVm }))
+		const Constructor = Vue.extend(
+			Object.assign({}, PopupComponent, { rootVm })
+		)
 		const instance = new Constructor({
 			propsData: {
 				mask,
@@ -358,6 +374,6 @@ class PopupManager implements IPopupManager {
 	}
 }
 
-const VuePopup: VuePopup = PopupManager
+const VuePopup: Popup = _Popup
 
 export default VuePopup
