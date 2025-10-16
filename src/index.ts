@@ -6,7 +6,7 @@ import { ANIMATION_TYPES, AnimationType } from './CONSTANTS'
 import { typeOf } from './utils'
 import PACKAGE_JSON from '../package.json'
 
-export { ANIMATION_TYPES, AnimationType }
+export type { AnimationType }
 
 type PopupPlugin = {
 	/**
@@ -22,33 +22,8 @@ type PopupPlugin = {
 	install: PopupPluginInstall
 }
 
-/**
- * 定义一个VuePopup插件
- * - 插件必须在 `Vue.use(VuePopup)` 之前安装，否则 `install` 方法内无法获取
- * - 可使用 `usePlugin` 方法安装插件
- * - 使用示例：
- * ```
- * import VuePopup, { definePlugin } from '@styzy/vue-popup'
- *
- * const plugin = definePlugin({
- * 	name: 'test',
- * 	install(Popup, Vue) {
- * 		Popup.prototype.test = function (){
- * 			this.render({
- * 				// 自定义参数
- * 			})
- * 		}
- * 	}
- * })
- *
- * // 安装插件
- * VuePopup.usePlugin(plugin)
- * ```
- */
-export function definePlugin<TPlugin extends PopupPlugin>(
-	plugin: TPlugin
-): TPlugin {
-	return plugin
+export interface IDefinePlugin {
+	<TPlugin extends PopupPlugin>(plugin: TPlugin): TPlugin
 }
 
 type PopupPluginInstall = (Popup: PopupInPlugin, Vue: VueConstructor) => void
@@ -194,10 +169,37 @@ export type Popup = {
 	 */
 	readonly install: PluginFunction<void>
 	/**
+	 * 定义一个VuePopup插件
+	 * - 可使用 `usePlugin` 方法安装插件
+	 * - 使用示例：
+	 * ```
+	 * import VuePopup from '@styzy/vue-popup'
+	 *
+	 * const plugin = VuePopup.definePlugin({
+	 * 	name: 'test',
+	 * 	install(Popup, Vue) {
+	 * 		Popup.prototype.test = function (){
+	 * 			this.render({
+	 * 				// 自定义参数
+	 * 			})
+	 * 		}
+	 * 	}
+	 * })
+	 *
+	 * // 安装插件
+	 * VuePopup.usePlugin(plugin)
+	 * ```
+	 */
+	readonly definePlugin: IDefinePlugin
+	/**
 	 * 安装插件
 	 * @param plugin 插件对象
 	 */
 	readonly usePlugin: (plugin: PopupPlugin) => void
+	/**
+	 * 动画类型常量
+	 */
+	readonly ANIMATION_TYPES: typeof ANIMATION_TYPES
 	/**
 	 * 创建弹窗管理器实例
 	 * - 通过 `new` 关键字创建实例，每个实例都是独立的弹窗管理器
@@ -260,6 +262,9 @@ class _Popup implements IPopup {
 			}
 		})
 	}
+	static definePlugin<TPlugin extends PopupPlugin>(plugin: TPlugin): TPlugin {
+		return plugin
+	}
 	static usePlugin(plugin: PopupPlugin) {
 		if (!plugin) return
 
@@ -273,6 +278,7 @@ class _Popup implements IPopup {
 
 		plugin.install(VuePopup, Vue)
 	}
+	static ANIMATION_TYPES = ANIMATION_TYPES
 	static plugins: Record<string, PopupPlugin> = {}
 	private _seed = 0
 	private _zIndex: number
