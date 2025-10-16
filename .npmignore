@@ -31,5 +31,6 @@ src
 .gitignore
 babel.config.js
 jsconfig.json
+tsconfig.json
 prettier.config.js
 vue.config.js
