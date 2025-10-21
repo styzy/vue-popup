@@ -7,8 +7,6 @@ export default VuePopup.definePlugin({
 		// console.log('plugin install ')
 		// console.log('Popup: ', Popup)
 		// console.log('Vue: ', Vue)
-		Popup.prototype.render = 1
-		Popup.prototype.$test1 = []
 		Popup.prototype.$test = function (message: string) {
 			// console.log('this: ', this)
 			this.render({
