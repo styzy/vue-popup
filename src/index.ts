@@ -157,7 +157,9 @@ type PopupPrototype = Record<
 	| undefined
 	| bigint
 	| PopupPrototypeFunctionValue
->
+> & {
+	render: '不允许覆盖 render 方法'
+}
 
 export type Popup = {
 	/**
@@ -230,7 +232,7 @@ type PopupInPlugin = Popup & {
 	/**
 	 * 原型属性
 	 * - 可在插件的 `install` 方法中扩展方法或属性
-	 * - 该属性为只读属性，不能直接修改，只允许扩展
+	 * - 该属性为只读属性，只允许扩展，并且 `render` 方法不能被覆盖
 	 * - 使用示例：
 	 * ```
 	 * // 插件中扩展方法
