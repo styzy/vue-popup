@@ -1,6 +1,6 @@
-import { definePlugin } from '@/index'
+import VuePopup from '@/index'
 
-export default definePlugin({
+export default VuePopup.definePlugin({
 	name: 'Test',
 	install(Popup, Vue) {
 		// console.log('Vue: ', Vue)
